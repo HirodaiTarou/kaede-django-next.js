@@ -1,0 +1,26 @@
+# Django関連
+Django>=5.2.4,<5.3
+djangorestframework>=3.15.0,<4.0
+django-cors-headers>=4.3.1,<5.0
+
+# OpenAPI/Swagger関連
+drf-spectacular>=0.27.0,<1.0
+
+# データベース関連
+psycopg2-binary>=2.9.9,<3.0
+
+# 開発・テスト関連
+black>=24.0.0,<25.0
+isort>=5.13.0,<6.0
+flake8>=7.0.0,<8.0
+pytest>=8.0.0,<9.0
+pytest-django>=4.8.0,<5.0
+
+# 環境変数管理
+python-decouple>=3.8,<4.0
+
+# セキュリティ関連
+cryptography>=42.0.0,<43.0
+
+# その他
+Pillow>=10.2.0,<11.0 
