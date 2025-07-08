@@ -1,138 +1,94 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
-)
-from typing import Any
 
 
 class UserManager(BaseUserManager):
     """
-    ユーザーマネージャークラス。ユーザー作成・スーパーユーザー作成のロジックを定義。
+    カスタムユーザーマネージャー
     """
-
-    def create_user(
-        self, user_email: str, password: str | None = None, **extra_fields: Any
-    ) -> 'User':
+    
+    def create_user(self, email, username, password=None, **extra_fields):
         """
-        一般ユーザーを作成します。
+        一般ユーザーを作成
         """
-        if not user_email:
+        if not email:
             raise ValueError('メールアドレスは必須です')
-        user_email = self.normalize_email(user_email)
-        user = self.model(user_email=user_email, **extra_fields)
+        
+        email = self.normalize_email(email)
+        user = self.model(
+            email=email,
+            username=username,
+            **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
-
-    def create_superuser(
-        self, user_email: str, password: str, **extra_fields: Any
-    ) -> 'User':
+    
+    def create_superuser(self, email, username, password=None, **extra_fields):
         """
-        スーパーユーザーを作成します。
+        スーパーユーザーを作成
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        
         if extra_fields.get('is_staff') is not True:
             raise ValueError('スーパーユーザーはis_staff=Trueである必要があります')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('スーパーユーザーはis_superuser=Trueである必要があります')
-        return self.create_user(user_email, password, **extra_fields)
+        
+        return self.create_user(email, username, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
-    カスタムユーザーモデル。
-    Laravelのシーダーファイルに基づいてフィールドを定義。
+    ユーザーモデル
+    database.mdの仕様に基づいて作成
     """
-    # 基本情報（Laravelシーダーに基づく）
-    user_name: models.CharField = models.CharField(
-        'ユーザー名',
-        max_length=255,
-        null=False,
-        blank=False
-    )
-    user_email: models.EmailField = models.EmailField(
-        'メールアドレス',
-        unique=True,
-        null=False,
-        blank=False
-    )
     
-    # 大学・所属情報（Laravelシーダーに基づく）
-    university_name: models.CharField = models.CharField(
-        '大学名',
-        max_length=255,
-        null=False,
-        blank=False
-    )
-    category: models.CharField = models.CharField(
-        '所属',
-        max_length=100,
-        null=False,
-        blank=False
-    )
-    faculty: models.CharField = models.CharField(
-        '学部',
-        max_length=100,
-        null=False,
-        blank=False
-    )
-    department: models.CharField = models.CharField(
-        '学科',
-        max_length=100,
-        null=False,
-        blank=False
-    )
-    admission_year: models.IntegerField = models.IntegerField(
-        '入学年度',
-        null=False,
-        blank=False
-    )
+    # 基本情報
+    id = models.AutoField(primary_key=True, verbose_name='ID（主キー）')
+    username = models.CharField(max_length=150, verbose_name='ユーザー名')
+    email = models.EmailField(unique=True, verbose_name='メールアドレス')
+    password = models.CharField(max_length=128, verbose_name='パスワード')
     
-    # Django認証用フィールド
-    is_active: models.BooleanField = models.BooleanField(
-        'アカウント有効',
-        default=True
-    )
-    is_staff: models.BooleanField = models.BooleanField(
-        'スタッフ権限',
-        default=False
-    )
+    # 大学情報
+    university_name = models.CharField(max_length=100, verbose_name='大学名')
+    category = models.CharField(max_length=50, verbose_name='所属')
+    faculty = models.CharField(max_length=100, verbose_name='学部')
+    department = models.CharField(max_length=100, verbose_name='学科')
+    admission_year = models.IntegerField(verbose_name='入学年度')
+    
+    # システム情報
+    is_active = models.BooleanField(default=True, verbose_name='アクティブ')
+    is_staff = models.BooleanField(default=False, verbose_name='スタッフ')
     
     # タイムスタンプ
-    created_at: models.DateTimeField = models.DateTimeField(
-        '作成時間',
-        auto_now_add=True
-    )
-    updated_at: models.DateTimeField = models.DateTimeField(
-        '更新時間',
-        auto_now=True
-    )
-
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成時間')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
+    
+    # カスタムマネージャー
     objects = UserManager()
-
-    USERNAME_FIELD = 'user_email'
-    REQUIRED_FIELDS: list[str] = [
-        'user_name',
-        'university_name',
-        'category',
-        'faculty',
-        'department',
-        'admission_year'
-    ]
-
+    
+    # 認証設定
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    
     class Meta:
+        db_table = 'users'
         verbose_name = 'ユーザー'
         verbose_name_plural = 'ユーザー'
-        db_table = 'users'
-
-    def __str__(self) -> str:
-        return self.user_email
-
-    def get_full_name(self) -> str:
-        """ユーザーのフルネームを返す"""
-        return self.user_name
-
-    def get_short_name(self) -> str:
-        """ユーザーの短縮名を返す"""
-        return self.user_name
+    
+    def __str__(self):
+        return self.username
+    
+    def get_full_name(self):
+        """
+        フルネームを返す（今回はusernameを返す）
+        """
+        return self.username
+    
+    def get_short_name(self):
+        """
+        短縮名を返す（今回はusernameを返す）
+        """
+        return self.username

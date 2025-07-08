@@ -23,16 +23,16 @@ lectures ||--o{ lecture_labels : "含む"
 labels ||--o{ lecture_labels : "含む"
 
 lectures {
-    id lectureId pk "講義ID"
-    string lectureName "授業名"
-    string teacherName "主担当教員名"
+    id id pk "講義ID"
+    string lecture_name "授業名"
+    string teacher_name "主担当教員名"
 }
 
 lecture_details {
-    id lectureDetailId pk "講義詳細ID"
-    id lectureId fk "講義ID"
-    string lectureCode "講義コード"
-    string syllabusUrl "シラバスURL"
+    id id pk "講義詳細ID"
+    id lecture_id fk "講義ID"
+    string lecture_code "講義コード"
+    string syllabus_url "シラバスURL"
     string location "開講場所"
     string faculty "開講部局"
     string category "科目区分"
@@ -40,90 +40,90 @@ lecture_details {
 }
 
 lecture_detail_times {
-    id lectureDetailTimeId pk "時間割ID"
-    id lectureDetailId fk "講義詳細ID"
+    id id pk "時間割ID"
+    id lecture_detail_id fk "講義詳細ID"
     int year "年度"
     string term "ターム"
-    string dayOfWeek "曜日"
-    string timePeriod "時限"
+    string day_of_week "曜日"
+    string time_period "時限"
 }
 
 users {
     id id pk "ID（主キー）"
-    string userName "ユーザー名"
-    string userEmail "メールアドレス"
+    string username "ユーザー名"
+    string email "メールアドレス"
     string password "パスワード"
-    string universityName "大学名"
+    string university_name "大学名"
     string category "所属"
     string faculty "学部"
     string department "学科"
-    int admissionYear "入学年度"
+    int admission_year "入学年度"
     timestamp created_at "作成時間"
     timestamp updated_at "更新時間"
 }
 
 reviews {
-    id reviewId pk "ID（主キー）"
-    id lectureId fk "講義ID"
-    id userId fk "ユーザーID"
-    integer attendanceYear "受講年度"
-    string attendanceConfirm "出欠の有無"
-    string weeklyAssignments "毎回のレポート・テスト"
-    string midtermAssignments "中間のレポート・テスト"
-    string finalAssignments "期末のレポート・テスト"
-    string pastExamPossession "過去問の所持"
+    id id pk "ID（主キー）"
+    id lecture_id fk "講義ID"
+    id user_id fk "ユーザーID"
+    integer attendance_year "受講年度"
+    string attendance_confirm "出欠の有無"
+    string weekly_assignments "毎回のレポート・テスト"
+    string midterm_assignments "中間のレポート・テスト"
+    string final_assignments "期末のレポート・テスト"
+    string past_exam_possession "過去問の所持"
     string grades "成績"
-    int creditLevel "単位取得"
-    int interestLevel "面白さ"
-    int skillLevel "スキル"
+    int credit_level "単位取得"
+    int interest_level "面白さ"
+    int skill_level "スキル"
     text comments "コメント"
     timestamp created_at "投稿時間"
     timestamp updated_at "更新時間"
 }
 
 review_logs {
-    id reviewLogId pk "ID（主キー）"
-    id lectureId fk "講義ID"
-    id userId fk "ユーザーID"
-    integer attendanceYear "受講年度"
-    string attendanceConfirm "出欠の有無"
-    string weeklyAssignments "毎回のレポート・テスト"
-    string midtermAssignments "中間のレポート・テスト"
-    string finalAssignments "期末のレポート・テスト"
-    string pastExamPossession "過去問の所持"
+    id id pk "ID（主キー）"
+    id lecture_id fk "講義ID"
+    id user_id fk "ユーザーID"
+    integer attendance_year "受講年度"
+    string attendance_confirm "出欠の有無"
+    string weekly_assignments "毎回のレポート・テスト"
+    string midterm_assignments "中間のレポート・テスト"
+    string final_assignments "期末のレポート・テスト"
+    string past_exam_possession "過去問の所持"
     string grades "成績"
-    int creditLevel "単位取得"
-    int interestLevel "面白さ"
-    int skillLevel "スキル"
+    int credit_level "単位取得"
+    int interest_level "面白さ"
+    int skill_level "スキル"
     text comments "コメント"
     string status "状況"
     timestamp created_at "投稿時間"
 }
 
 labels {
-    id labelId pk "ラベルID"
-    string labelName "ラベル名"
+    id id pk "ラベルID"
+    string label_name "ラベル名"
 }
 
 lecture_labels {
-    id lectureId fk "講義ID"
-    id labelId fk "ラベルID"
+    id lecture_id fk "講義ID"
+    id label_id fk "ラベルID"
 }
 
 likes {
-    id reviewId fk "レビューID"
-    id userId fk "ユーザーID"
+    id review_id fk "レビューID"
+    id user_id fk "ユーザーID"
     timestamp created_at "いいね時間"
 }
 
 delete_review_requests {
-    id reviewId fk "レビューID"
-    id userId fk "ユーザーID"
+    id review_id fk "レビューID"
+    id user_id fk "ユーザーID"
     timestamp created_at "報告時間"
 }
 
 contacts {
-    id contactId pk "コンタクトID"
+    id id pk "コンタクトID"
     string name "氏名"
     string email "メールアドレス"
     string category "種類"
@@ -141,8 +141,8 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | 講義ID |
-| `lectureName` | `string` | `NOT NULL` | 授業名 |
-| `teacherName` | `string` | `NOT NULL` | 主担当教員名 |
+| `lecture_name` | `string` | `NOT NULL` | 授業名 |
+| `teacher_name` | `string` | `NOT NULL` | 主担当教員名 |
 | `created_at` | `timestamp` | `NOT NULL` | 作成時間 |
 | `updated_at` | `timestamp` | `NOT NULL` | 更新時間 |
 
@@ -153,9 +153,9 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | 講義詳細ID |
-| `lectureId` | `id` | `FOREIGN KEY` | 講義ID |
-| `lectureCode` | `string` | `NOT NULL` | 講義コード |
-| `syllabusUrl` | `string` | - | シラバスURL |
+| `lecture_id` | `id` | `FOREIGN KEY` | 講義ID |
+| `lecture_code` | `string` | `NOT NULL` | 講義コード |
+| `syllabus_url` | `string` | - | シラバスURL |
 | `location` | `string` | - | 開講場所 |
 | `faculty` | `string` | - | 開講部局 |
 | `category` | `string` | - | 科目区分 |
@@ -170,29 +170,29 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | 時間割ID |
-| `lectureDetailId` | `id` | `FOREIGN KEY` | 講義詳細ID |
+| `lecture_detail_id` | `id` | `FOREIGN KEY` | 講義詳細ID |
 | `year` | `int` | `NOT NULL` | 年度 |
 | `term` | `string` | `NOT NULL` | ターム |
-| `dayOfWeek` | `string` | `NOT NULL` | 曜日 |
-| `timePeriod` | `string` | `NOT NULL` | 時限 |
+| `day_of_week` | `string` | `NOT NULL` | 曜日 |
+| `time_period` | `string` | `NOT NULL` | 時限 |
 | `created_at` | `timestamp` | `NOT NULL` | 作成時間 |
 | `updated_at` | `timestamp` | `NOT NULL` | 更新時間 |
 
 ### 4. users（ユーザーテーブル）
 
-ユーザー情報を管理するテーブルです。Laravelのシーダーファイルに基づいて定義。
+ユーザー情報を管理するテーブルです。Djangoの標準的な命名規則に従って定義。
 
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | ID（主キー） |
-| `userName` | `string` | `NOT NULL` | ユーザー名 |
-| `userEmail` | `string` | `UNIQUE, NOT NULL` | メールアドレス |
+| `username` | `string` | `NOT NULL` | ユーザー名 |
+| `email` | `string` | `UNIQUE, NOT NULL` | メールアドレス |
 | `password` | `string` | `NOT NULL` | パスワード（ハッシュ化） |
-| `universityName` | `string` | `NOT NULL` | 大学名 |
+| `university_name` | `string` | `NOT NULL` | 大学名 |
 | `category` | `string` | `NOT NULL` | 所属 |
 | `faculty` | `string` | `NOT NULL` | 学部 |
 | `department` | `string` | `NOT NULL` | 学科 |
-| `admissionYear` | `int` | `NOT NULL` | 入学年度 |
+| `admission_year` | `int` | `NOT NULL` | 入学年度 |
 | `created_at` | `timestamp` | `NOT NULL` | 作成時間 |
 | `updated_at` | `timestamp` | `NOT NULL` | 更新時間 |
 
@@ -203,18 +203,18 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | ID（主キー） |
-| `lectureId` | `id` | `FOREIGN KEY` | 講義ID |
-| `userId` | `id` | `FOREIGN KEY` | ユーザーID |
-| `attendanceYear` | `integer` | - | 受講年度 |
-| `attendanceConfirm` | `string` | - | 出欠の有無 |
-| `weeklyAssignments` | `string` | - | 毎回のレポート・テスト |
-| `midtermAssignments` | `string` | - | 中間のレポート・テスト |
-| `finalAssignments` | `string` | - | 期末のレポート・テスト |
-| `pastExamPossession` | `string` | - | 過去問の所持 |
+| `lecture_id` | `id` | `FOREIGN KEY` | 講義ID |
+| `user_id` | `id` | `FOREIGN KEY` | ユーザーID |
+| `attendance_year` | `integer` | - | 受講年度 |
+| `attendance_confirm` | `string` | - | 出欠の有無 |
+| `weekly_assignments` | `string` | - | 毎回のレポート・テスト |
+| `midterm_assignments` | `string` | - | 中間のレポート・テスト |
+| `final_assignments` | `string` | - | 期末のレポート・テスト |
+| `past_exam_possession` | `string` | - | 過去問の所持 |
 | `grades` | `string` | - | 成績 |
-| `creditLevel` | `int` | - | 単位取得 |
-| `interestLevel` | `int` | - | 面白さ |
-| `skillLevel` | `int` | - | スキル |
+| `credit_level` | `int` | - | 単位取得 |
+| `interest_level` | `int` | - | 面白さ |
+| `skill_level` | `int` | - | スキル |
 | `comments` | `text` | - | コメント |
 | `created_at` | `timestamp` | `NOT NULL` | 投稿時間 |
 | `updated_at` | `timestamp` | `NOT NULL` | 更新時間 |
@@ -226,18 +226,18 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | ID（主キー） |
-| `lectureId` | `id` | `FOREIGN KEY` | 講義ID |
-| `userId` | `id` | `FOREIGN KEY` | ユーザーID |
-| `attendanceYear` | `integer` | - | 受講年度 |
-| `attendanceConfirm` | `string` | - | 出欠の有無 |
-| `weeklyAssignments` | `string` | - | 毎回のレポート・テスト |
-| `midtermAssignments` | `string` | - | 中間のレポート・テスト |
-| `finalAssignments` | `string` | - | 期末のレポート・テスト |
-| `pastExamPossession` | `string` | - | 過去問の所持 |
+| `lecture_id` | `id` | `FOREIGN KEY` | 講義ID |
+| `user_id` | `id` | `FOREIGN KEY` | ユーザーID |
+| `attendance_year` | `integer` | - | 受講年度 |
+| `attendance_confirm` | `string` | - | 出欠の有無 |
+| `weekly_assignments` | `string` | - | 毎回のレポート・テスト |
+| `midterm_assignments` | `string` | - | 中間のレポート・テスト |
+| `final_assignments` | `string` | - | 期末のレポート・テスト |
+| `past_exam_possession` | `string` | - | 過去問の所持 |
 | `grades` | `string` | - | 成績 |
-| `creditLevel` | `int` | - | 単位取得 |
-| `interestLevel` | `int` | - | 面白さ |
-| `skillLevel` | `int` | - | スキル |
+| `credit_level` | `int` | - | 単位取得 |
+| `interest_level` | `int` | - | 面白さ |
+| `skill_level` | `int` | - | スキル |
 | `comments` | `text` | - | コメント |
 | `status` | `string` | - | 状況 |
 | `created_at` | `timestamp` | `NOT NULL` | 投稿時間 |
@@ -249,7 +249,7 @@ contacts {
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
 | `id` | `increments` | `PRIMARY KEY` | ラベルID |
-| `labelName` | `string` | `UNIQUE, NOT NULL` | ラベル名 |
+| `label_name` | `string` | `UNIQUE, NOT NULL` | ラベル名 |
 | `created_at` | `timestamp` | `NOT NULL` | 作成時間 |
 | `updated_at` | `timestamp` | `NOT NULL` | 更新時間 |
 
@@ -259,8 +259,8 @@ contacts {
 
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
-| `lectureId` | `id` | `FOREIGN KEY` | 講義ID |
-| `labelId` | `id` | `FOREIGN KEY` | ラベルID |
+| `lecture_id` | `id` | `FOREIGN KEY` | 講義ID |
+| `label_id` | `id` | `FOREIGN KEY` | ラベルID |
 
 ### 9. likes（いいねテーブル）
 
@@ -268,8 +268,8 @@ contacts {
 
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
-| `reviewId` | `id` | `FOREIGN KEY` | レビューID |
-| `userId` | `id` | `FOREIGN KEY` | ユーザーID |
+| `review_id` | `id` | `FOREIGN KEY` | レビューID |
+| `user_id` | `id` | `FOREIGN KEY` | ユーザーID |
 | `created_at` | `timestamp` | `NOT NULL` | いいね時間 |
 
 ### 10. delete_review_requests（レビュー削除リクエストテーブル）
@@ -278,8 +278,8 @@ contacts {
 
 | カラム名 | データ型 | 制約 | 説明 |
 |---------|---------|------|------|
-| `reviewId` | `id` | `FOREIGN KEY` | レビューID |
-| `userId` | `id` | `FOREIGN KEY` | ユーザーID |
+| `review_id` | `id` | `FOREIGN KEY` | レビューID |
+| `user_id` | `id` | `FOREIGN KEY` | ユーザーID |
 | `created_at` | `timestamp` | `NOT NULL` | 報告時間 |
 
 ### 11. contacts（お問い合わせテーブル）
@@ -329,19 +329,19 @@ contacts {
 
 ```sql
 -- 検索性能向上のためのインデックス
-CREATE INDEX idx_reviews_lecture_id ON reviews(lectureId);
-CREATE INDEX idx_reviews_user_id ON reviews(userId);
+CREATE INDEX idx_reviews_lecture_id ON reviews(lecture_id);
+CREATE INDEX idx_reviews_user_id ON reviews(user_id);
 CREATE INDEX idx_reviews_created_at ON reviews(created_at);
 
-CREATE INDEX idx_likes_review_id ON likes(reviewId);
-CREATE INDEX idx_likes_user_id ON likes(userId);
+CREATE INDEX idx_likes_review_id ON likes(review_id);
+CREATE INDEX idx_likes_user_id ON likes(user_id);
 
-CREATE INDEX idx_lecture_labels_lecture_id ON lecture_labels(lectureId);
-CREATE INDEX idx_lecture_labels_label_id ON lecture_labels(labelId);
+CREATE INDEX idx_lecture_labels_lecture_id ON lecture_labels(lecture_id);
+CREATE INDEX idx_lecture_labels_label_id ON lecture_labels(label_id);
 
 -- ユーザー検索用
-CREATE INDEX idx_users_email ON users(userEmail);
-CREATE INDEX idx_users_university ON users(universityName);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_university ON users(university_name);
 ```
 
 ## データ型の詳細
@@ -361,22 +361,18 @@ CREATE INDEX idx_users_university ON users(universityName);
 ### その他
 - `boolean`: 真偽値
 
-## Laravel命名規則との対応
+## Django命名規則との対応
 
 ### テーブル名
-- Laravel: `snake_case` (例: `lecture_details`)
 - Django: `snake_case` (例: `lecture_details`)
 
 ### カラム名
-- Laravel: `camelCase` (例: `lectureName`)
 - Django: `snake_case` (例: `lecture_name`)
 
 ### 主キー
-- Laravel: `id` (increments)
 - Django: `id` (AutoField)
 
 ### タイムスタンプ
-- Laravel: `created_at`, `updated_at`
 - Django: `created_at`, `updated_at`
 
 ## セキュリティ考慮事項
@@ -388,11 +384,11 @@ CREATE INDEX idx_users_university ON users(universityName);
 
 ## マイグレーション戦略
 
-### Laravel → Django 変換
+### Django標準命名規則
 
-1. **テーブル名**: そのまま使用（snake_case）
-2. **カラム名**: camelCase → snake_case
-3. **データ型**: Laravel → Django対応
+1. **テーブル名**: snake_case
+2. **カラム名**: snake_case
+3. **データ型**: Django標準
 4. **リレーション**: 外部キー制約の維持
 
 ### 推奨マイグレーション手順
