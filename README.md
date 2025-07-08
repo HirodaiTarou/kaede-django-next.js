@@ -8,7 +8,7 @@ Kaede は、Next.js + Django + Supabase を使用したモダンな Web アプ�
 
 ### リポジトリ構成
 
-- **ポリレポ構成**：フロントエンドとバックエンドを分離したリポジトリ構成
+- **レポ構成**：フロントエンドとバックエンドを分離したリポジトリ構成
 
 ### インフラ構成
 
@@ -22,51 +22,20 @@ Kaede は、Next.js + Django + Supabase を使用したモダンな Web アプ�
 
 ### フロントエンド
 
-- **Next.js**
-  - サーバーサイドレンダリング対応
-  - 最適化されたパフォーマンス
-- **React**
-  - 引き継ぎが容易
-  - 豊富な参考資料とコミュニティ
-- **TypeScript**
-  - 型安全性の確保
-  - 開発効率の向上
+- Next.js
+- React
+- TypeScript
 
 ### バックエンド
 
-- **Django**
-  - 標準管理画面の提供
-  - チームメンバー（服部、高原）の習熟度が高い
-  - 豊富なライブラリとエコシステム
-- **Docker**
-  - 開発環境の標準化
-  - デプロイメントの一貫性
+- Django
+- Docker
 
 ## API 設計・開発戦略
 
-### Django REST Framework (DRF)
-
-- **Django との親和性が高い**
-- **シリアライザーによる型安全な API 開発**
-- **自動的な OpenAPI 仕様書生成**
-
-### OpenAPI/Swagger 統合
-
-- `drf-spectacular`を使用して Django から OpenAPI 仕様を自動生成
-- フロントエンドとの型共有を実現
-- API 仕様の自動文書化
-
-### API 設計原則
-
-- **RESTful 設計に準拠**
-- **バージョニング戦略**：URL path versioning (`/api/v1/`)
-- **一貫したレスポンス形式とエラーハンドリング**
-
-### 型安全性の確保
-
-- **バックエンド**：DRF シリアライザーによる型定義
-- **フロントエンド**：OpenAPI 仕様から TypeScript 型を自動生成
-- **型生成の自動化**：`openapi-typescript`を使用
+- **Django REST Framework (DRF)** + OpenAPI/Swagger 統合
+- **RESTful 設計** + URL path versioning (`/api/v1/`)
+- **型安全性**：DRF シリアライザー → OpenAPI → TypeScript 型自動生成（`openapi-typescript`）
 
 ## 開発環境構築
 
@@ -123,11 +92,7 @@ docker-compose up -d
 - **バックエンド**：Render.com への自動デプロイ
 - **データベース**：Supabase でのマネージド運用
 
-## チーム構成
 
-- **服部**：Django 開発担当
-- **高原**：Django 開発担当
-- その他メンバー：フロントエンド・インフラ担当
 
 ## 参考資料
 
