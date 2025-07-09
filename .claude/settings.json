@@ -20,9 +20,5 @@
   },
   "env": {
     "DJANGO_SETTINGS_MODULE": "core.settings"
-  },
-  "includeCoAuthoredBy": true,
-  "additionalDirectories": [
-    "/Users/amoon/development/kaede/backend"
-  ]
+  }
 }

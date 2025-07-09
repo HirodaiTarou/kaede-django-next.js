@@ -1,14 +1,47 @@
-.PHONY: help install install-backend install-frontend dev dev-backend dev-frontend dev-docker build test lint format clean docker-up docker-down docker-build docker-logs
+.PHONY: help setup dev dev-backend dev-frontend dev-docker install install-backend install-frontend build test lint format clean docker-up docker-down docker-build docker-logs migrate makemigrations
 
+# =============================================================================
+# メイン実行コマンド
+# =============================================================================
+
+# プロジェクトの初期セットアップ
+setup: docker-build docker-up
+	@echo "⏳ Waiting for services to be ready..."
+	@sleep 20
+	@echo ""
+	@echo "🎉 Setup completed successfully!"
+	@echo "📊 Backend API: http://localhost:8000"
+	@echo "🌐 Frontend App: http://localhost:3000"
+	@echo "🗄️  Database: http://localhost:5432"
+	@echo ""
+	@echo "✅ Services are ready! Open http://localhost:3000 in your browser"
+
+# 開発環境の起動（ローカル環境で両方を並列実行）
+dev: docker-up
+	@echo ""
+	@echo "🚀 Starting development servers..."
+	@echo "📊 Backend API: http://localhost:8000"
+	@echo "🌐 Frontend App: http://localhost:3000"
+	@echo ""
+	@echo "📝 Useful commands:"
+	@echo "  Ctrl+C to stop both servers"
+	@echo "  make dev-backend    - Start Django only"
+	@echo "  make dev-frontend   - Start Next.js only"
+	@echo ""
+	@echo "⏳ Starting servers in parallel..."
+
+
+# ヘルプの表示
 help:
 	@echo "Available commands:"
+	@echo "  setup           - Initial project setup (install deps, build, migrate)"
+	@echo "  dev             - Start development servers (requires setup first)"
+	@echo "  dev-backend     - Start Django development server locally"
+	@echo "  dev-frontend    - Start Next.js development server locally"
+
 	@echo "  install         - Install dependencies for both backend and frontend"
 	@echo "  install-backend - Install Python dependencies"
 	@echo "  install-frontend- Install Node.js dependencies"
-	@echo "  dev             - Start development servers using Docker (recommended)"
-	@echo "  dev-backend     - Start Django development server locally"
-	@echo "  dev-frontend    - Start Next.js development server locally"
-	@echo "  dev-docker      - Start development servers using Docker"
 	@echo "  build           - Build the frontend application"
 	@echo "  test            - Run tests for both backend and frontend"
 	@echo "  lint            - Run linters for both backend and frontend"
@@ -18,6 +51,8 @@ help:
 	@echo "  docker-down     - Stop Docker services"
 	@echo "  docker-build    - Build Docker images"
 	@echo "  docker-logs     - Show Docker logs"
+	@echo "  migrate         - Run database migrations"
+	@echo "  makemigrations  - Create database migrations"
 
 # =============================================================================
 # 依存関係のインストール
@@ -30,37 +65,6 @@ install-backend:
 
 install-frontend:
 	cd frontend && npm install
-
-# =============================================================================
-# 開発環境の起動
-# =============================================================================
-
-dev: docker-up
-	@echo ""
-	@echo "🚀 Development environment is starting..."
-	@echo "📊 Backend API: http://localhost:8000"
-	@echo "🌐 Frontend App: http://localhost:3000"
-	@echo "🗄️  Database: http://localhost:5432"
-	@echo ""
-	@echo "📝 Useful commands:"
-	@echo "  make docker-logs    - View logs"
-	@echo "  make docker-down    - Stop services"
-	@echo "  make clean          - Clean up"
-	@echo ""
-	@echo "⏳ Waiting for services to be ready..."
-	@sleep 10
-	@echo "✅ Services are ready! Open http://localhost:3000 in your browser"
-
-dev-backend:
-	cd backend && python manage.py runserver
-
-dev-frontend:
-	cd frontend && npm run dev
-
-dev-docker: docker-up
-	@echo "Docker development environment started"
-	@echo "Backend: http://localhost:8000"
-	@echo "Frontend: http://localhost:3000"
 
 # =============================================================================
 # Docker環境の管理
@@ -84,6 +88,20 @@ docker-build:
 docker-logs:
 	@echo "📋 Showing Docker logs..."
 	docker compose logs -f
+
+# =============================================================================
+# データベース管理
+# =============================================================================
+
+migrate:
+	@echo "🔄 Running database migrations..."
+	docker compose exec backend python manage.py migrate
+	@echo "✅ Database migrations completed"
+
+makemigrations:
+	@echo "📝 Creating database migrations..."
+	docker compose exec backend python manage.py makemigrations
+	@echo "✅ Migrations created"
 
 # =============================================================================
 # ビルドとテスト

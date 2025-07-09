@@ -29,3 +29,7 @@ export const userApi = {
   getUsers: () => api.get<User[]>('/users/'),
   getUser: (id: number) => api.get<User>(`/users/${id}/`),
 };
+
+export const helloApi = {
+  getHello: () => api.get<{ message: string }>('/hello/'),
+};
