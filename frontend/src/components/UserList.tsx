@@ -13,12 +13,10 @@ export default function UserList() {
       try {
         const response = await userApi.getUsers();
         console.log('API Response:', response.data);
-        
+
         // ページネーションレスポンスの処理
-        if (response.data.results && Array.isArray(response.data.results)) {
+        if (response.data && Array.isArray(response.data.results)) {
           setUsers(response.data.results);
-        } else if (Array.isArray(response.data)) {
-          setUsers(response.data);
         } else {
           console.error('Response data is not an array:', response.data);
           setUsers([]);
