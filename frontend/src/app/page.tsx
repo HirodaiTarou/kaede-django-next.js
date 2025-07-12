@@ -16,7 +16,7 @@ export default function Home() {
       const response = await helloApi.getHello();
       setMessage(response.data.message);
     } catch (err) {
-      setError('Failed to fetch hello message');
+      setError('Fail to fetch hello message');
       console.error(err);
     } finally {
       setLoading(false);
