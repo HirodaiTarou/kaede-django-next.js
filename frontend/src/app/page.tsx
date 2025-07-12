@@ -30,25 +30,25 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">Kaede Application</h1>
-        
+        <h1 className="text-3xl font-bold text-center mb-8">Kaede</h1>
+
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Backend Connection Test</h2>
-          
+
           {loading && (
             <div className="text-blue-500">Loading...</div>
           )}
-          
+
           {error && (
             <div className="text-red-500 mb-4">{error}</div>
           )}
-          
+
           {message && (
             <div className="text-green-600 font-bold text-2xl mb-4">
               {message}
             </div>
           )}
-          
+
           <button
             onClick={fetchHello}
             disabled={loading}
@@ -57,7 +57,7 @@ export default function Home() {
             {loading ? 'Loading...' : 'Test Connection'}
           </button>
         </div>
-        
+
         <UserList />
       </div>
     </div>
