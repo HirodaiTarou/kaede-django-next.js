@@ -4,11 +4,11 @@ services:
     runtime: python3
     buildCommand: |
       pip install --upgrade pip
-      pip install -r backend/requirements.txt
-      python backend/manage.py collectstatic --noinput
-      python backend/manage.py migrate
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
     startCommand: |
-      cd backend && gunicorn --bind 0.0.0.0:$PORT core.wsgi:application
+      gunicorn --bind 0.0.0.0:$PORT core.wsgi:application
     plan: free
     envVars:
       - key: SECRET_KEY
@@ -16,9 +16,9 @@ services:
       - key: DJANGO_SETTINGS_MODULE
         value: core.settings_production
       - key: DATABASE_URL
-        value: # Supabaseから取得したURLを設定
+        value: postgresql://postgres:[YOUR-PASSWORD]@db.keuhmyurtwifucvdnlol.supabase.co:5432/postgres
       - key: FRONTEND_URL
-        value: # Vercelから取得したURLを設定
+        value: https://kaede-orpin.vercel.app/
       - key: DEBUG
         value: "False"
     healthCheckPath: /api/hello/
