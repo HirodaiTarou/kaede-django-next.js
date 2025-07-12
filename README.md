@@ -3,7 +3,7 @@
 ## 概要
 
 Kaede は、Next.js + Django + Supabase を使用したモダンな Web アプリケーションです。
-元プロジェクトリポジトリ（https://github.com/atsukihat/l10dev） をベースに開発されています。
+プロジェクトリポジトリ（https://github.com/atsukihat/l10dev） をベースに開発されています。
 
 ## アーキテクチャ
 
