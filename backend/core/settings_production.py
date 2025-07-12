@@ -15,6 +15,7 @@ ALLOWED_HOSTS = [
     os.environ.get('RENDER_EXTERNAL_URL', '').replace('https://', ''),
     'localhost',
     '127.0.0.1',
+    '*.onrender.com',
 ]
 
 # データベース設定（Supabase PostgreSQL）
@@ -33,7 +34,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # セキュリティ設定
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False  # Renderで問題を起こす可能性があるため無効化
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
