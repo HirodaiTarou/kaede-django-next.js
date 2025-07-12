@@ -16,6 +16,7 @@ services:
       - db
     stdin_open: true
     tty: true
+    # Uses unified entrypoint.sh with development environment detection
 
   frontend:
     build:

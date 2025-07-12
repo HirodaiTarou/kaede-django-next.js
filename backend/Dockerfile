@@ -14,7 +14,6 @@ RUN apt-get update \
         libpq-dev \
         curl \
         git \
-        netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -35,5 +34,5 @@ USER app
 # Expose port
 EXPOSE 8000
 
-# Use entrypoint script
+# Use production entrypoint script
 CMD ["./entrypoint.sh"]

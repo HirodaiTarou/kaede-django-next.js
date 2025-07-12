@@ -30,5 +30,5 @@ RUN chmod +x entrypoint.sh
 # Expose port
 EXPOSE 8000
 
-# Use entrypoint script for development
+# Use unified entrypoint script
 CMD ["./entrypoint.sh"]
