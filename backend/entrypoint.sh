@@ -3,17 +3,19 @@
 # Exit on any error
 set -e
 
+# Force correct Django settings module
+export DJANGO_SETTINGS_MODULE=core.settings
+
 # Environment detection
-if [ "$DJANGO_SETTINGS_MODULE" != "core.settings_production" ]; then
-    echo "🚀 Starting Django backend setup (Development)..."
-    ENVIRONMENT="development"
-else
+ENVIRONMENT=${ENVIRONMENT:-development}
+if [ "$ENVIRONMENT" = "production" ]; then
     echo "🚀 Starting Django backend setup (Production)..."
-    ENVIRONMENT="production"
+else
+    echo "🚀 Starting Django backend setup (Development)..."
 fi
 
 # Wait for database (only in development)
-if [ "$ENVIRONMENT" = "development" ]; then
+if [ "$ENVIRONMENT" != "production" ]; then
     echo "⏳ Waiting for database..."
     while ! nc -z db 5432; do
       sleep 1
@@ -28,7 +30,7 @@ echo "📦 Running database migrations..."
 python manage.py migrate
 
 # Create superuser (only in development)
-if [ "$ENVIRONMENT" = "development" ]; then
+if [ "$ENVIRONMENT" != "production" ]; then
     echo "👤 Creating superuser (if not exists)..."
     python manage.py shell -c "
 from django.contrib.auth import get_user_model
@@ -52,19 +54,19 @@ fi
 
 # Collect static files
 echo "📁 Collecting static files..."
-if [ "$ENVIRONMENT" = "development" ]; then
-    python manage.py collectstatic --noinput || echo "⚠️  Static files collection failed, continuing..."
-else
+if [ "$ENVIRONMENT" = "production" ]; then
     python manage.py collectstatic --noinput
+else
+    python manage.py collectstatic --noinput || echo "⚠️  Static files collection failed, continuing..."
 fi
 
 echo "✅ Django backend setup complete!"
 
 # Start server based on environment
-if [ "$ENVIRONMENT" = "development" ]; then
-    echo "🌐 Starting Django development server..."
-    exec python manage.py runserver 0.0.0.0:8000
-else
+if [ "$ENVIRONMENT" = "production" ]; then
     echo "🌐 Starting Django production server with gunicorn..."
     exec gunicorn --bind 0.0.0.0:$PORT core.wsgi:application
+else
+    echo "🌐 Starting Django development server..."
+    exec python manage.py runserver 0.0.0.0:8000
 fi
