@@ -14,6 +14,7 @@ RUN apt-get update \
         libpq-dev \
         curl \
         git \
+        netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
