@@ -93,8 +93,6 @@ docker-compose up -d
 - **バックエンド**：Render.com への自動デプロイ
 - **データベース**：Supabase でのマネージド運用
 
-
-
 ## 参考資料
 
 - [元プロジェクトリポジトリ](https://github.com/atsukihat/l10dev)
