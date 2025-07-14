@@ -2,12 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NODE_ENV === 'production' 
-      ? process.env.NEXT_PUBLIC_API_URL || 'https://your-app.onrender.com/api'
-      : 'http://localhost:8000/api'
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://your-app.onrender.com/api'
+        : 'http://localhost:8000/api')
   },
   output: 'standalone',
   trailingSlash: true,
+  // Vercelデプロイ時の最適化設定
+  experimental: {
+    optimizePackageImports: ['axios']
+  }
 };
 
 export default nextConfig;
