@@ -87,7 +87,7 @@ frontend/public/manifest.json
 frontend/public/assets/
 frontend/.vercel
 frontend/yarn-error.log
-frontend/package-lock.json
+# frontend/package-lock.json
 frontend/yarn.lock
 frontend/.env*.local
 frontend/.next/
