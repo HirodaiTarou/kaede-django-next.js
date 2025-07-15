@@ -28,16 +28,13 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
+        run: npm ci --prefix frontend
 
       - name: Run linting
-        working-directory: ./frontend
-        run: npm run lint
+        run: npm run lint --prefix frontend
 
       - name: Build project
-        working-directory: ./frontend
-        run: npm run build
+        run: npm run build --prefix frontend
 
   preview:
     if: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main') }}
@@ -58,36 +55,30 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
+        run: npm ci --prefix frontend
 
       - name: Install Vercel CLI
-        working-directory: ./frontend
         run: npm install --global vercel@latest
 
       - name: Create .vercel/project.json
-        working-directory: ./frontend
         run: |
           mkdir -p .vercel
           echo '{
             "orgId": "${{ secrets.VERCEL_ORG_ID }}",
             "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
             "settings": {
-              "rootDirectory": "."
+              "rootDirectory": "frontend"
             }
           }' > .vercel/project.json
 
       - name: Pull Vercel Environment Information
-        working-directory: ./frontend
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_KAEDE_TOKEN }}
 
       - name: Build Project Artifacts
-        working-directory: ./frontend
         run: vercel build --token=${{ secrets.VERCEL_KAEDE_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: deploy
-        working-directory: ./frontend
         run: echo "url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_KAEDE_TOKEN }})" >> $GITHUB_OUTPUT
 
   prod:
@@ -106,33 +97,27 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        working-directory: ./frontend
-        run: npm ci
+        run: npm ci --prefix frontend
 
       - name: Install Vercel CLI
-        working-directory: ./frontend
         run: npm install --global vercel@latest
 
       - name: Create .vercel/project.json
-        working-directory: ./frontend
         run: |
           mkdir -p .vercel
           echo '{
             "orgId": "${{ secrets.VERCEL_ORG_ID }}",
             "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
             "settings": {
-              "rootDirectory": "."
+              "rootDirectory": "frontend"
             }
           }' > .vercel/project.json
 
       - name: Pull Vercel Environment Information
-        working-directory: ./frontend
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_KAEDE_TOKEN }}
 
       - name: Build Project Artifacts
-        working-directory: ./frontend
         run: vercel build --prod --token=${{ secrets.VERCEL_KAEDE_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        working-directory: ./frontend
         run: vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_KAEDE_TOKEN }}
