@@ -115,7 +115,7 @@ jobs:
             "orgId": "${{ secrets.VERCEL_ORG_ID }}",
             "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
             "settings": {
-              "rootDirectory": "."
+              "rootDirectory": ".."
             }
           }' > .vercel/project.json
 
