@@ -113,7 +113,10 @@ jobs:
           mkdir -p .vercel
           echo '{
             "orgId": "${{ secrets.VERCEL_ORG_ID }}",
-            "projectId": "${{ secrets.VERCEL_PROJECT_ID }}"
+            "projectId": "${{ secrets.VERCEL_PROJECT_ID }}",
+            "settings": {
+              "rootDirectory": "."
+            }
           }' > .vercel/project.json
 
       - name: Pull Vercel Environment Information
