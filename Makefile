@@ -1,4 +1,4 @@
-.PHONY: help setup dev dev-backend dev-frontend dev-docker install install-backend install-frontend build test lint format clean docker-up docker-down docker-build docker-logs migrate makemigrations
+.PHONY: help setup dev dev-backend dev-frontend dev-docker install install-backend install-frontend build test lint format clean docker-up docker-down docker-build docker-logs migrate makemigrations generate-schema schema
 
 # =============================================================================
 # メイン実行コマンド
@@ -53,6 +53,8 @@ help:
 	@echo "  docker-logs     - Show Docker logs"
 	@echo "  migrate         - Run database migrations"
 	@echo "  makemigrations  - Create database migrations"
+	@echo "  generate-schema - Generate OpenAPI schema file"
+	@echo "  schema          - Alias for generate-schema"
 
 # =============================================================================
 # 依存関係のインストール
@@ -102,6 +104,17 @@ makemigrations:
 	@echo "📝 Creating database migrations..."
 	docker compose exec backend python manage.py makemigrations
 	@echo "✅ Migrations created"
+
+# =============================================================================
+# API仕様書生成
+# =============================================================================
+
+generate-schema:
+	@echo "📋 Generating OpenAPI schema..."
+	docker compose exec backend python manage.py spectacular --file openapi-schema.yml
+	@echo "✅ OpenAPI schema generated"
+
+schema: generate-schema
 
 # =============================================================================
 # ビルドとテスト
