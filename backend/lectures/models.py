@@ -24,7 +24,9 @@ class LectureDetail(models.Model):
     講義詳細情報
     """
     id = models.AutoField(primary_key=True)
-    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE, related_name="details")
+    lecture = models.ForeignKey(
+        Lecture, on_delete=models.CASCADE, related_name="details"
+    )
     lecture_code = models.CharField(max_length=50)
     syllabus_url = models.URLField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
@@ -46,7 +48,9 @@ class LectureDetailTime(models.Model):
     講義時間割情報
     """
     id = models.AutoField(primary_key=True)
-    lecture_detail = models.ForeignKey(LectureDetail, on_delete=models.CASCADE, related_name="times")
+    lecture_detail = models.ForeignKey(
+        LectureDetail, on_delete=models.CASCADE, related_name="times"
+    )
     year = models.IntegerField()
     term = models.CharField(max_length=20)
     day_of_week = models.CharField(max_length=10)
@@ -59,36 +63,3 @@ class LectureDetailTime(models.Model):
 
     def __str__(self):
         return f"{self.year} {self.term} {self.day_of_week} {self.time_period}"
-
-
-class Label(models.Model):
-    """
-    ラベル
-    """
-    id = models.AutoField(primary_key=True)
-    label_name = models.CharField(max_length=50, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = "labels"
-
-    def __str__(self):
-        return self.label_name
-
-
-class LectureLabel(models.Model):
-    """
-    講義とラベルの多対多関連
-    """
-    lecture = models.ForeignKey(Lecture, on_delete=models.CASCADE)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = "lecture_labels"
-        unique_together = ("lecture", "label")
-
-    def __str__(self):
-        return f"{self.lecture.lecture_name} <-> {self.label.label_name}"
-
-# Create your models here.

@@ -60,7 +60,11 @@ class ReviewLog(models.Model):
     lecture = models.ForeignKey(
         Lecture, on_delete=models.CASCADE
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_DEFAULT,
+        default=1
+    )
     attendance_year = models.IntegerField(
         blank=True, null=True
     )
@@ -95,44 +99,6 @@ class ReviewLog(models.Model):
             f"{self.lecture.lecture_name} - "
             f"{self.user.username} - {self.status}"
         )
-
-
-class Like(models.Model):
-    """
-    いいね
-    """
-
-    review = models.ForeignKey(
-        Review, on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "likes"
-        unique_together = ("review", "user")
-
-    def __str__(self):
-        return f"{self.review.id} - {self.user.username}"
-
-
-class DeleteReviewRequest(models.Model):
-    """
-    レビュー削除リクエスト
-    """
-
-    review = models.ForeignKey(
-        Review, on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "delete_review_requests"
-        unique_together = ("review", "user")
-
-    def __str__(self):
-        return f"{self.review.id} - {self.user.username}"
 
 
 # Create your models here.
