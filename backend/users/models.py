@@ -80,15 +80,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
-
-    def get_full_name(self):
-        """
-        フルネームを返す（今回はusernameを返す）
-        """
-        return self.username
-
-    def get_short_name(self):
-        """
-        短縮名を返す（今回はusernameを返す）
-        """
-        return self.username

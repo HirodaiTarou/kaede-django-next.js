@@ -7,22 +7,17 @@ class Contact(models.Model):
     database.mdの仕様に基づいて作成
     """
 
-    id = models.AutoField(primary_key=True, verbose_name="コンタクトID")
-    name = models.CharField(max_length=100, verbose_name="氏名")
-    email = models.EmailField(verbose_name="メールアドレス")
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
     category = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name="種類"
+        max_length=50, blank=True, null=True
     )
-    message = models.TextField(verbose_name="メッセージ")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="問い合わせ時間")
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "contacts"
-        verbose_name = "お問い合わせ"
-        verbose_name_plural = "お問い合わせ"
+        db_table = "contact"
 
     def __str__(self):
         return f"{self.name} <{self.email}>"
-
-
-# Create your models here.
