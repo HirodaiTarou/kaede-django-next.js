@@ -46,25 +46,25 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
 
     # 基本情報
-    id = models.AutoField(primary_key=True, verbose_name='ID（主キー）')
-    username = models.CharField(max_length=150, verbose_name='ユーザー名')
-    email = models.EmailField(unique=True, verbose_name='メールアドレス')
-    password = models.CharField(max_length=128, verbose_name='パスワード')
+    id = models.AutoField(primary_key=True, )
+    username = models.CharField(max_length=150, )
+    email = models.EmailField(unique=True, )
+    password = models.CharField(max_length=128, )
 
     # 大学情報
-    university_name = models.CharField(max_length=100, verbose_name='大学名')
-    category = models.CharField(max_length=50, verbose_name='所属')
-    faculty = models.CharField(max_length=100, verbose_name='学部')
-    department = models.CharField(max_length=100, verbose_name='学科')
-    admission_year = models.IntegerField(verbose_name='入学年度')
+    university_name = models.CharField(max_length=100, )
+    category = models.CharField(max_length=50, )
+    faculty = models.CharField(max_length=100, )
+    department = models.CharField(max_length=100, )
+    admission_year = models.IntegerField()
 
     # システム情報
-    is_active = models.BooleanField(default=True, verbose_name='アクティブ')
-    is_staff = models.BooleanField(default=False, verbose_name='スタッフ')
+    is_active = models.BooleanField(default=True, )
+    is_staff = models.BooleanField(default=False, )
 
     # タイムスタンプ
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成時間')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新時間')
+    created_at = models.DateTimeField(auto_now_add=True, )
+    updated_at = models.DateTimeField(auto_now=True, )
 
     # カスタムマネージャー
     objects = UserManager()
@@ -75,20 +75,30 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'users'
-        verbose_name = 'ユーザー'
-        verbose_name_plural = 'ユーザー'
 
     def __str__(self):
         return self.username
 
-    def get_full_name(self):
-        """
-        フルネームを返す（今回はusernameを返す）
-        """
-        return self.username
 
-    def get_short_name(self):
-        """
-        短縮名を返す（今回はusernameを返す）
-        """
-        return self.username
+class UserLog(models.Model):
+    """
+    ユーザーログ（操作履歴）
+    """
+
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=150, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    university_name = models.CharField(max_length=100, blank=True, null=True)
+    category = models.CharField(max_length=50, blank=True, null=True)
+    faculty = models.CharField(max_length=100, blank=True, null=True)
+    department = models.CharField(max_length=100, blank=True, null=True)
+    admission_year = models.IntegerField(blank=True, null=True)
+    action = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "user_logs"
+
+    def __str__(self):
+        return f"{self.username} - {self.action}"
