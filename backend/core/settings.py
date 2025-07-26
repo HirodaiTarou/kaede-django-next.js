@@ -27,9 +27,10 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'rest_framework',
-    'corsheaders',
-    'drf_spectacular',
+    "rest_framework",
+    "corsheaders",
+    "drf_spectacular",
+    "import_export",
 ]
 
 LOCAL_APPS = [

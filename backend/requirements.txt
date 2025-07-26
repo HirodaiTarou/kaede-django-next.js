@@ -30,3 +30,6 @@ Pillow>=10.2.0,<11.0
 dj-database-url>=2.1.0,<3.0
 whitenoise>=6.6.0,<7.0
 gunicorn>=21.2.0,<22.0
+
+# Admmin追加機能
+django-import-export
