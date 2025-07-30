@@ -6,7 +6,7 @@ class Lecture(models.Model):
     講義基本情報
     """
     id = models.AutoField(primary_key=True)
-    lecture_name = models.CharField(max_length=100, null=False, blank=False)
+    lecture_name = models.CharField(max_length=300, null=False, blank=False)
     teacher_name = models.CharField(max_length=100, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
