@@ -246,7 +246,6 @@ contacts {
 | `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000    | コメント          |
 | `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
 | `status`               | CharField     | ✅      | ✅       | ✕   | ✕    |        |  20   | 操作種別（create/update/delete）  |
-| `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
 
 ### 8. contacts（お問い合わせテーブル）
 
