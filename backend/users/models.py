@@ -46,25 +46,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     """
 
     # 基本情報
-    id = models.AutoField(primary_key=True, )
-    username = models.CharField(max_length=150, )
-    email = models.EmailField(unique=True, )
-    password = models.CharField(max_length=128, )
+
+    id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=50, null=False, blank=False)
+    email = models.EmailField(unique=True, max_length=254, null=False, blank=False)
+    password = models.CharField(max_length=128, null=False, blank=False)
 
     # 大学情報
-    university_name = models.CharField(max_length=100, )
-    category = models.CharField(max_length=50, )
-    faculty = models.CharField(max_length=100, )
-    department = models.CharField(max_length=100, )
-    admission_year = models.IntegerField()
+    university_name = models.CharField(max_length=100, null=False, blank=True)
+    category = models.CharField(max_length=100, null=False, blank=False)
+    faculty = models.CharField(max_length=100, null=False, blank=True)
+    department = models.CharField(max_length=100, null=False, blank=True)
+    admission_year = models.IntegerField(null=True, blank=True)
 
     # システム情報
-    is_active = models.BooleanField(default=True, )
-    is_staff = models.BooleanField(default=False, )
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     # タイムスタンプ
-    created_at = models.DateTimeField(auto_now_add=True, )
-    updated_at = models.DateTimeField(auto_now=True, )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # カスタムマネージャー
     objects = UserManager()
@@ -86,16 +87,16 @@ class UserLog(models.Model):
     """
 
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=150, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    university_name = models.CharField(max_length=100, blank=True, null=True)
-    category = models.CharField(max_length=50, blank=True, null=True)
-    faculty = models.CharField(max_length=100, blank=True, null=True)
-    department = models.CharField(max_length=100, blank=True, null=True)
-    admission_year = models.IntegerField(blank=True, null=True)
-    action = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    username = models.CharField(max_length=50, null=False, blank=False)
+    email = models.EmailField(max_length=254, unique=True, null=False, blank=False)
+    university_name = models.CharField(max_length=100, null=False, blank=True)
+    category = models.CharField(max_length=100, null=False, blank=False)
+    faculty = models.CharField(max_length=100, null=False, blank=True)
+    department = models.CharField(max_length=100, null=False, blank=True)
+    admission_year = models.IntegerField(null=True, blank=True)
+    action = models.CharField(max_length=20, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
 
     class Meta:
         db_table = "user_logs"
