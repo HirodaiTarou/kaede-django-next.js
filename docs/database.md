@@ -125,140 +125,141 @@ contacts {
 
 講義の基本情報を管理するテーブルです。
 
-| カラム名       | データ型     | 制約          | 説明         |
-| -------------- | ------------ | ------------- | ------------ |
-| `id`           | `increments` | `PRIMARY KEY` | 講義 ID      |
-| `lecture_name` | `string`     | `NOT NULL`    | 授業名       |
-| `teacher_name` | `string`     | `NOT NULL`    | 主担当教員名 |
-| `created_at`   | `timestamp`  | `NOT NULL`    | 作成時間     |
-| `updated_at`   | `timestamp`  | `NOT NULL`    | 更新時間     |
+| フィールド名         | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明     |
+| -------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ------ |
+| `id`           | AutoField     | ✕      | ✕       | ✅   | ✅   |        |     | 講義 ID  |
+| `lecture_name` | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 授業名    |
+| `teacher_name` | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 主担当教員名 |
+| `created_at`   | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 作成時間   |
+| `updated_at`   | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間   |
 
 ### 2. lecture_details（講義詳細テーブル）
 
 講義の詳細情報を管理するテーブルです。
 
-| カラム名       | データ型     | 制約          | 説明         |
-| -------------- | ------------ | ------------- | ------------ |
-| `id`           | `increments` | `PRIMARY KEY` | 講義詳細 ID  |
-| `lecture_id`   | `id`         | `FOREIGN KEY` | 講義 ID      |
-| `lecture_code` | `string`     | `NOT NULL`    | 講義コード   |
-| `syllabus_url` | `string`     | -             | シラバス URL |
-| `location`     | `string`     | -             | 開講場所     |
-| `faculty`      | `string`     | -             | 開講部局     |
-| `category`     | `string`     | -             | 科目区分     |
-| `grade`        | `string`     | -             | 履修年次     |
-| `created_at`   | `timestamp`  | `NOT NULL`    | 作成時間     |
-| `updated_at`   | `timestamp`  | `NOT NULL`    | 更新時間     |
+| フィールド名         | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明          |
+| -------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ----------- |
+| `id`           | AutoField     | ✕      | ✕       | ✅   | ✅    |        |     | 講義詳細 ID     |
+| `lecture_id`   | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義 ID（外部キー） |
+| `lecture_code` | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 講義コード       |
+| `syllabus_url` | CharField     | ✕      | ✕       | ✕   | ✕    |        | 200 | シラバス URL    |
+| `location`     | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 開講場所        |
+| `faculty`      | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 開講部局        |
+| `category`     | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 科目区分        |
+| `grade`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 履修年次        |
+| `created_at`   | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 作成時間        |
+| `updated_at`   | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間        |
 
 ### 3. lecture_detail_times（講義時間割テーブル）
 
 講義の時間割情報を管理するテーブルです。
 
-| カラム名            | データ型     | 制約          | 説明        |
-| ------------------- | ------------ | ------------- | ----------- |
-| `id`                | `increments` | `PRIMARY KEY` | 時間割 ID   |
-| `lecture_detail_id` | `id`         | `FOREIGN KEY` | 講義詳細 ID |
-| `year`              | `int`        | `NOT NULL`    | 年度        |
-| `term`              | `string`     | `NOT NULL`    | ターム      |
-| `day_of_week`       | `string`     | `NOT NULL`    | 曜日        |
-| `time_period`       | `string`     | `NOT NULL`    | 時限        |
-| `created_at`        | `timestamp`  | `NOT NULL`    | 作成時間    |
-| `updated_at`        | `timestamp`  | `NOT NULL`    | 更新時間    |
+| フィールド名              | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明            |
+| ------------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ------------- |
+| `id`                | AutoField     | ✕      | ✕       | ✅   | ✅    |        |     | 時間割 ID        |
+| `lecture_detail_id` | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義詳細 ID（外部キー） |
+| `year`              | IntegerField  | ✕      | ✕       | ✕   | ✕    |        |     | 年度            |
+| `term`              | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100   | ターム（学期）       |
+| `day_of_week`       | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100   | 曜日            |
+| `time_period`       | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100   | 時限            |
+| `created_at`        | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 作成時間          |
+| `updated_at`        | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間          |
 
 ### 4. users（ユーザーテーブル）
 
 ユーザー情報を管理するテーブルです。Django の標準的な命名規則に従って定義。
 
-| カラム名          | データ型     | 制約               | 説明                     |
-| ----------------- | ------------ | ------------------ | ------------------------ |
-| `id`              | `increments` | `PRIMARY KEY`      | ID（主キー）             |
-| `username`        | `string`     | `NOT NULL`         | ユーザー名               |
-| `email`           | `string`     | `UNIQUE, NOT NULL` | メールアドレス           |
-| `password`        | `string`     | `NOT NULL`         | パスワード（ハッシュ化） |
-| `university_name` | `string`     | `NOT NULL`         | 大学名                   |
-| `category`        | `string`     | `NOT NULL`         | 所属                     |
-| `faculty`         | `string`     | `NOT NULL`         | 学部                     |
-| `department`      | `string`     | `NOT NULL`         | 学科                     |
-| `admission_year`  | `int`        | `NOT NULL`         | 入学年度                 |
-| `created_at`      | `timestamp`  | `NOT NULL`         | 作成時間                 |
-| `updated_at`      | `timestamp`  | `NOT NULL`         | 更新時間                 |
+| フィールド名            | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明           |
+| ----------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ------------ |
+| `id`              | AutoField     | ✕      | ✕       | ✅   | ✅  |        |     | ID（主キー）      |
+| `username`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100    | ユーザー名        |
+| `email`           | CharField     | ✕      | ✕       | ✕   | ✅    |        | 100    | メールアドレス      |
+| `password`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100    | パスワード（ハッシュ化） |
+| `university_name` | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100    | 大学名          |
+| `category`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100    | 所属           |
+| `faculty`         | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100    | 学部           |
+| `department`      | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100    | 学科           |
+| `admission_year`  | IntegerField  | ✅     | ✅      | ✕   | ✕    |        |     | 入学年度         |
+| `created_at`      | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 作成時間         |
+| `updated_at`      | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間         |
 
-### 5. reviews（レビューテーブル）
-
-講義レビューを管理するテーブルです。
-
-| カラム名               | データ型     | 制約                    | 説明                   |
-| ---------------------- | ------------ | ----------------------- | ---------------------- |
-| `id`                   | `increments` | `PRIMARY KEY`           | ID（主キー）           |
-| `lecture_id`           | `id`         | `FOREIGN KEY, NOT NULL` | 講義 ID                |
-| `user_id`              | `id`         | `FOREIGN KEY, NOT NULL` | ユーザー ID            |
-| `attendance_year`      | `integer`    | -                       | 受講年度               |
-| `attendance_confirm`   | `string`     | -                       | 出欠の有無             |
-| `weekly_assignments`   | `string`     | -                       | 毎回のレポート・テスト |
-| `midterm_assignments`  | `string`     | -                       | 中間のレポート・テスト |
-| `final_assignments`    | `string`     | -                       | 期末のレポート・テスト |
-| `past_exam_possession` | `string`     | -                       | 過去問の所持           |
-| `grades`               | `string`     | -                       | 成績                   |
-| `credit_level`         | `int`        | -                       | 単位取得               |
-| `interest_level`       | `int`        | -                       | 面白さ                 |
-| `skill_level`          | `int`        | -                       | スキル                 |
-| `comments`             | `text`       | -                       | コメント               |
-| `created_at`           | `timestamp`  | `NOT NULL`              | 投稿時間               |
-| `updated_at`           | `timestamp`  | `NOT NULL`              | 更新時間               |
-
-### 6. review_logs（レビューログテーブル）
-
-レビューの変更履歴を管理するテーブルです。
-
-| カラム名               | データ型     | 制約          | 説明                   |
-| ---------------------- | ------------ | ------------- | ---------------------- |
-| `id`                   | `increments` | `PRIMARY KEY` | ID（主キー）           |
-| `lecture_id`           | `id`         | `FOREIGN KEY` | 講義 ID                |
-| `user_id`              | `id`         | `FOREIGN KEY` | ユーザー ID            |
-| `attendance_year`      | `integer`    | -             | 受講年度               |
-| `attendance_confirm`   | `string`     | -             | 出欠の有無             |
-| `weekly_assignments`   | `string`     | -             | 毎回のレポート・テスト |
-| `midterm_assignments`  | `string`     | -             | 中間のレポート・テスト |
-| `final_assignments`    | `string`     | -             | 期末のレポート・テスト |
-| `past_exam_possession` | `string`     | -             | 過去問の所持           |
-| `grades`               | `string`     | -             | 成績                   |
-| `credit_level`         | `int`        | -             | 単位取得               |
-| `interest_level`       | `int`        | -             | 面白さ                 |
-| `skill_level`          | `int`        | -             | スキル                 |
-| `comments`             | `text`       | -             | コメント               |
-| `status`               | `string`     | -             | 状況                   |
-| `created_at`           | `timestamp`  | `NOT NULL`    | 投稿時間               |
-
-### 7. user_logs（ユーザーログテーブル）
+### 5. user_logs（ユーザーログテーブル）
 
 ユーザーの操作履歴を管理するテーブルです。
 
-| カラム名          | データ型     | 制約          | 説明                             |
-| ----------------- | ------------ | ------------- | -------------------------------- |
-| `id`              | `increments` | `PRIMARY KEY` | ID（主キー）                     |
-| `user_id`         | `id`         | `FOREIGN KEY` | ユーザー ID                      |
-| `username`        | `string`     | -             | ユーザー名                       |
-| `email`           | `string`     | -             | メールアドレス                   |
-| `university_name` | `string`     | -             | 大学名                           |
-| `category`        | `string`     | -             | 所属                             |
-| `faculty`         | `string`     | -             | 学部                             |
-| `department`      | `string`     | -             | 学科                             |
-| `admission_year`  | `int`        | -             | 入学年度                         |
-| `action`          | `string`     | `NOT NULL`    | 操作種別（create/change/delete） |
-| `created_at`      | `timestamp`  | `NOT NULL`    | 操作時間                         |
+| フィールド名            | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明                         |
+| ----------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | -------------------------- |
+| `id`              | AutoField     | ✕      | ✕       | ✅   | ✅    |        |     | ID（主キー）                    |
+| `user_id`         | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | ユーザー ID（外部キー）              |
+| `username`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100  | ユーザー名        |
+| `email`           | CharField     | ✕      | ✕       | ✕   | ✅    |        |  100 | メールアドレス      |
+| `university_name` | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100    | 大学名          |
+| `category`        | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100 | 所属           |
+| `faculty`         | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100 | 学部           |
+| `department`      | CharField     | ✕      | ✅      | ✕   | ✕    |        | 100 | 学科           |
+| `admission_year`  | IntegerField  | ✅     | ✅      | ✕   | ✕    |        |     | 入学年度         |
+| `action`          | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100  | 操作種別（create/update/delete） |
+| `created_at`      | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 操作時間                       |
+
+### 6. reviews（レビューテーブル）
+
+講義レビューを管理するテーブルです。
+
+| フィールド名                 | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明            |
+| ---------------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ------------- |
+| `id`                   | AutoField     | ✕      | ✕       | ✅   | ✅    |        |     | ID（主キー）       |
+| `lecture_id`           | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義 ID（外部キー）   |
+| `user_id`              | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | ユーザー ID（外部キー） |
+| `attendance_year`      | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 受講年度          |
+| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 出欠の有無         |
+| `weekly_assignments`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 毎回のレポート・テスト   |
+| `midterm_assignments`  | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100    | 中間のレポート・テスト   |
+| `final_assignments`    | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 期末のレポート・テスト   |
+| `past_exam_possession` | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 過去問の所持        |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 成績            |
+| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得          |
+| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ           |
+| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル           |
+| `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000   | コメント          |
+| `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
+| `updated_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間          |
+
+### 7. review_logs（レビューログテーブル）
+
+レビューの変更履歴を管理するテーブルです。
+
+| フィールド名                 | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明            |
+| ---------------------- | ------------- | ------ | ------- | --- | ---- | ------ | --- | ------------- |
+| `id`                   | AutoField     | ✕      | ✕       | ✅   | ✅    |        |     | ID（主キー）       |
+| `lecture_id`           | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義 ID（外部キー）   |
+| `user_id`              | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | ユーザー ID（外部キー） |
+| `attendance_year`      | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 受講年度          |
+| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 出欠の有無         |
+| `weekly_assignments`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 毎回のレポート・テスト   |
+| `midterm_assignments`  | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 中間のレポート・テスト   |
+| `final_assignments`    | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100    | 期末のレポート・テスト   |
+| `past_exam_possession` | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 過去問の所持        |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  100   | 成績            |
+| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得          |
+| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ           |
+| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル           |
+| `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000    | コメント          |
+| `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
+| `status`               | CharField     | ✅      | ✅       | ✕   | ✕    |        |  100   | 操作種別（create/update/delete）  |
+| `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
 
 ### 8. contacts（お問い合わせテーブル）
 
 お問い合わせを管理するテーブルです。
 
-| カラム名     | データ型     | 制約          | 説明           |
-| ------------ | ------------ | ------------- | -------------- |
-| `id`         | `increments` | `PRIMARY KEY` | コンタクト ID  |
-| `name`       | `string`     | `NOT NULL`    | 氏名           |
-| `email`      | `string`     | `NOT NULL`    | メールアドレス |
-| `category`   | `string`     | -             | 種類           |
-| `message`    | `text`       | `NOT NULL`    | メッセージ     |
-| `created_at` | `timestamp`  | `NOT NULL`    | 問い合わせ時間 |
+| フィールド名       | データ型          | NULL許可 | BLANK許可 | 主キー | 一意制約 | デフォルト値 | 最大長 | 説明       |
+| ------------ | ------------- | ------ | ------- | --- | ---- | ------ | --- | -------- |
+| `id`         | AutoField     | ✕      | ✕       | ✅   | ✕    |        |     | コンタクト ID |
+| `name`       | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100    | 氏名       |
+| `email`      | CharField     | ✕      | ✕       | ✕   | ✕    |        | 100    | メールアドレス  |
+| `category`   | CharField     | ✕      | ✅       | ✕   | ✕    |        | 100    | 種類（任意項目） |
+| `message`    | TextField     | ✕      | ✕       | ✕   | ✕    |        | 2000    | メッセージ内容  |
+| `created_at` | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 問い合わせ時間  |
 
 ## リレーション
 
