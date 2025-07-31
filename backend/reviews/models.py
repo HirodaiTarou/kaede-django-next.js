@@ -19,6 +19,7 @@ class Review(models.Model):
         ("good", "good"),
         ("pass", "pass"),
         ("fail", "fail"),
+        ("undecided", "undecided"),
     ]
 
     id = models.AutoField(primary_key=True)
@@ -82,6 +83,7 @@ class ReviewLog(models.Model):
         ("good", "good"),
         ("pass", "pass"),
         ("fail", "fail"),
+        ("undecided", "undecided"),
     ]
 
     id = models.AutoField(primary_key=True)
