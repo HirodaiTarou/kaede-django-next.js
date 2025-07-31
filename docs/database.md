@@ -62,15 +62,19 @@ reviews {
     id lecture_id fk "講義ID"
     id user_id fk "ユーザーID"
     integer attendance_year "受講年度"
-    string attendance_confirm "出欠の有無"
-    string weekly_assignments "毎回のレポート・テスト"
-    string midterm_assignments "中間のレポート・テスト"
-    string final_assignments "期末のレポート・テスト"
-    string past_exam_possession "過去問の所持"
-    string grades "成績"
-    int credit_level "単位取得"
-    int interest_level "面白さ"
-    int skill_level "スキル"
+    string attendance_confirm "出欠の有無 (no/sometimes/always)"
+    boolean weekly_reports "毎回レポートの有無"
+    boolean weekly_tests "毎回テストの有無"
+    boolean midterm_reports "中間レポートの有無"
+    boolean midterm_tests "中間テストの有無"
+    boolean final_reports "期末レポートの有無"
+    boolean final_tests "期末テストの有無"
+    boolean past_report_possession "過去レポートの所持"
+    boolean past_test_possession "過去テストの所持"
+    string grades "成績 (excellent/good/pass/fail)"
+    int credit_level "単位取得 (1~5の整数値)"
+    int interest_level "面白さ (1~5の整数値)"
+    int skill_level "スキル (1~5の整数値)"
     text comments "コメント"
     timestamp created_at "投稿時間"
     timestamp updated_at "更新時間"
@@ -81,15 +85,19 @@ review_logs {
     id lecture_id fk "講義ID"
     id user_id fk "ユーザーID"
     integer attendance_year "受講年度"
-    string attendance_confirm "出欠の有無"
-    string weekly_assignments "毎回のレポート・テスト"
-    string midterm_assignments "中間のレポート・テスト"
-    string final_assignments "期末のレポート・テスト"
-    string past_exam_possession "過去問の所持"
-    string grades "成績"
-    int credit_level "単位取得"
-    int interest_level "面白さ"
-    int skill_level "スキル"
+    string attendance_confirm "出欠の有無 (no/sometimes/always)"
+    boolean weekly_reports "毎回レポートの有無"
+    boolean weekly_tests "毎回テストの有無"
+    boolean midterm_reports "中間レポートの有無"
+    boolean midterm_tests "中間テストの有無"
+    boolean final_reports "期末レポートの有無"
+    boolean final_tests "期末テストの有無"
+    boolean past_report_possession "過去レポートの所持"
+    boolean past_test_possession "過去テストの所持"
+    string grades "成績 (excellent/good/pass/fail)"
+    int credit_level "単位取得 (1~5の整数値)"
+    int interest_level "面白さ (1~5の整数値)"
+    int skill_level "スキル (1~5の整数値)"
     text comments "コメント"
     string status "状況"
     timestamp created_at "投稿時間"
@@ -211,15 +219,19 @@ contacts {
 | `lecture_id`           | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義 ID（外部キー）   |
 | `user_id`              | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | ユーザー ID（外部キー） |
 | `attendance_year`      | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 受講年度          |
-| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 出欠の有無         |
-| `weekly_assignments`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 毎回のレポート・テスト   |
-| `midterm_assignments`  | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20    | 中間のレポート・テスト   |
-| `final_assignments`    | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 期末のレポート・テスト   |
-| `past_exam_possession` | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 過去問の所持        |
-| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績            |
-| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得          |
-| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ           |
-| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル           |
+| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 出欠の有無 (no/sometimes/always)         |
+| `weekly_reports`       | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 毎回レポートの有無   |
+| `weekly_tests`         | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 毎回テストの有無     |
+| `midterm_reports`      | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 中間レポートの有無   |
+| `midterm_tests`        | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 中間テストの有無     |
+| `final_reports`        | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末レポートの有無   |
+| `final_tests`          | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末テストの有無     |
+| `past_report_possession` | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去レポートの所持   |
+| `past_test_possession`   | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去テストの所持     |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/good/pass/fail) |
+| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得 (1~5の整数値) |
+| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ (1~5の整数値) |
+| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル (1~5の整数値) |
 | `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000   | コメント          |
 | `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
 | `updated_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 更新時間          |
@@ -234,15 +246,19 @@ contacts {
 | `lecture_id`           | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | 講義 ID（外部キー）   |
 | `user_id`              | ForeignKey    | ✕      | ✕       | ✕   | ✕    |        |     | ユーザー ID（外部キー） |
 | `attendance_year`      | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 受講年度          |
-| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 出欠の有無         |
-| `weekly_assignments`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 毎回のレポート・テスト   |
-| `midterm_assignments`  | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 中間のレポート・テスト   |
-| `final_assignments`    | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20    | 期末のレポート・テスト   |
-| `past_exam_possession` | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 過去問の所持        |
-| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績            |
-| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得          |
-| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ           |
-| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル           |
+| `attendance_confirm`   | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 出欠の有無 (no/sometimes/always)         |
+| `weekly_reports`       | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 毎回レポートの有無   |
+| `weekly_tests`         | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 毎回テストの有無     |
+| `midterm_reports`      | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 中間レポートの有無   |
+| `midterm_tests`        | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 中間テストの有無     |
+| `final_reports`        | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末レポートの有無   |
+| `final_tests`          | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末テストの有無     |
+| `past_report_possession` | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去レポートの所持   |
+| `past_test_possession`   | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去テストの所持     |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/good/pass/fail) |
+| `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得 (1~5の整数値) |
+| `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ (1~5の整数値) |
+| `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル (1~5の整数値) |
 | `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000    | コメント          |
 | `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
 | `status`               | CharField     | ✅      | ✅       | ✕   | ✕    |        |  20   | 操作種別（create/update/delete）  |
