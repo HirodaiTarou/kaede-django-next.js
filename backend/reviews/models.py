@@ -16,6 +16,7 @@ class Review(models.Model):
     ]
     GRADE_CHOICES = [
         ("excellent", "excellent"),
+        ("very_good", "very_good"),
         ("good", "good"),
         ("pass", "pass"),
         ("fail", "fail"),
@@ -80,6 +81,7 @@ class ReviewLog(models.Model):
     ]
     GRADE_CHOICES = [
         ("excellent", "excellent"),
+        ("very_good", "very_good"),
         ("good", "good"),
         ("pass", "pass"),
         ("fail", "fail"),
@@ -124,6 +126,3 @@ class ReviewLog(models.Model):
 
     def __str__(self):
         return f"{self.lecture.lecture_name} - " f"{self.user.username} - {self.status}"
-
-
-# Create your models here.

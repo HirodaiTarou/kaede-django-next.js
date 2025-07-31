@@ -71,7 +71,7 @@ reviews {
     boolean final_tests "期末テストの有無"
     boolean past_report_possession "過去レポートの所持"
     boolean past_test_possession "過去テストの所持"
-    string grades "成績 (excellent/good/pass/fail/undecided)"
+    string grades "成績 (excellent/very_good/good/pass/fail/undecided)"
     int credit_level "単位取得 (1~5の整数値)"
     int interest_level "面白さ (1~5の整数値)"
     int skill_level "スキル (1~5の整数値)"
@@ -94,7 +94,7 @@ review_logs {
     boolean final_tests "期末テストの有無"
     boolean past_report_possession "過去レポートの所持"
     boolean past_test_possession "過去テストの所持"
-    string grades "成績 (excellent/good/pass/fail)"
+    string grades "成績 (excellent/very_good/good/pass/fail)"
     int credit_level "単位取得 (1~5の整数値)"
     int interest_level "面白さ (1~5の整数値)"
     int skill_level "スキル (1~5の整数値)"
@@ -228,7 +228,7 @@ contacts {
 | `final_tests`          | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末テストの有無     |
 | `past_report_possession` | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去レポートの所持   |
 | `past_test_possession`   | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去テストの所持     |
-| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/good/pass/fail/undecided) |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/very_good/good/pass/fail/undecided) |
 | `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得 (1~5の整数値) |
 | `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ (1~5の整数値) |
 | `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル (1~5の整数値) |
@@ -255,7 +255,7 @@ contacts {
 | `final_tests`          | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 期末テストの有無     |
 | `past_report_possession` | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去レポートの所持   |
 | `past_test_possession`   | BooleanField  | ✅      | ✅       | ✕   | ✕    |        |       | 過去テストの所持     |
-| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/good/pass/fail/undecided) |
+| `grades`               | CharField     | ✕       | ✅       | ✕   | ✕    |        |  20   | 成績 (excellent/very_good/good/pass/fail/undecided) |
 | `credit_level`         | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 単位取得 (1~5の整数値) |
 | `interest_level`       | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | 面白さ (1~5の整数値) |
 | `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル (1~5の整数値) |
