@@ -30,6 +30,8 @@ dev: docker-up
 	@echo ""
 	@echo "⏳ Starting servers in parallel..."
 
+stop: docker-stop
+	@echo "✅ All Docker containers stopped"
 
 # ヘルプの表示
 help:
@@ -90,6 +92,11 @@ docker-build:
 docker-logs:
 	@echo "📋 Showing Docker logs..."
 	docker compose logs -f
+
+docker-stop:
+	@echo "🛑 Stopping all Docker containers..."
+	docker compose stop
+	@echo "✅ All Docker containers stopped"
 
 # =============================================================================
 # データベース管理
