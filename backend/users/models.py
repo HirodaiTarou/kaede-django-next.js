@@ -85,6 +85,11 @@ class UserLog(models.Model):
     """
     ユーザーログ（操作履歴）
     """
+    ACTION_CHOICES = [
+        ("create", "create"),
+        ("update", "update"),
+        ("delete", "delete"),
+    ]
 
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
@@ -95,7 +100,9 @@ class UserLog(models.Model):
     faculty = models.CharField(max_length=100, null=False, blank=True)
     department = models.CharField(max_length=100, null=False, blank=True)
     admission_year = models.IntegerField(null=True, blank=True)
-    action = models.CharField(max_length=20, null=False, blank=False)
+    action = models.CharField(
+        max_length=20, choices=ACTION_CHOICES, null=False, blank=False
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
 
     class Meta:

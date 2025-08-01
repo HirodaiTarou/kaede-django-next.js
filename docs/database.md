@@ -99,7 +99,7 @@ review_logs {
     int interest_level "面白さ (1~5の整数値)"
     int skill_level "スキル (1~5の整数値)"
     text comments "コメント"
-    string status "状況"
+    string action "状況"
     timestamp created_at "投稿時間"
 }
 
@@ -261,7 +261,7 @@ contacts {
 | `skill_level`          | IntegerField  | ✅      | ✅       | ✕   | ✕    |        |     | スキル (1~5の整数値) |
 | `comments`             | TextField     | ✕      | ✅       | ✕   | ✕    |        | 1000    | コメント          |
 | `created_at`           | DateTimeField | ✕      | ✕       | ✕   | ✕    |        |     | 投稿時間          |
-| `status`               | CharField     | ✅      | ✅       | ✕   | ✕    |        |  20   | 操作種別（create/update/delete）  |
+| `action`               | CharField     | ✅      | ✅       | ✕   | ✕    |        |  20   | 操作種別（create/update/delete）  |
 
 ### 8. contacts（お問い合わせテーブル）
 

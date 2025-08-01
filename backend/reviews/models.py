@@ -87,6 +87,11 @@ class ReviewLog(models.Model):
         ("fail", "fail"),
         ("undecided", "undecided"),
     ]
+    ACTION_CHOICES = [
+        ("create", "create"),
+        ("update", "update"),
+        ("delete", "delete"),
+    ]
 
     id = models.AutoField(primary_key=True)
     lecture = models.ForeignKey(
@@ -118,11 +123,13 @@ class ReviewLog(models.Model):
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
     comments = models.TextField(max_length=1000, null=False, blank=True)
-    status = models.CharField(max_length=20, null=True, blank=True)
+    action = models.CharField(
+        max_length=20, choices=ACTION_CHOICES, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
 
     class Meta:
         db_table = "review_logs"
 
     def __str__(self):
-        return f"{self.lecture.lecture_name} - " f"{self.user.username} - {self.status}"
+        return f"{self.lecture.lecture_name} - " f"{self.user.username} - {self.action}"
