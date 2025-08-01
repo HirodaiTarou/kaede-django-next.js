@@ -1,5 +1,9 @@
 # かえで 授業レビューサイト (Version 2)
 
+<div align="center">
+  <img width="430" height="430" alt="image" src="https://github.com/user-attachments/assets/45cec7c4-26d5-4ee5-9c5f-0e282d0f9a93" />
+</div>
+
 ## プロジェクト概要
 
 > 広大生のための授業レビューサイト
