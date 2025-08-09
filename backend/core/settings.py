@@ -165,6 +165,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Kaede API',
     'DESCRIPTION': 'Kaede API Documentation',
     'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': DEBUG,
 }
 
 # CORS
