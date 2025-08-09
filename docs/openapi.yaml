@@ -1,0 +1,1285 @@
+openapi: 3.0.3
+info:
+  title: Kaede API
+  version: 1.0.0
+  description: |
+    Kaede大学講義レビューシステムのAPI仕様書
+
+    ## 概要
+    大学生向けの講義レビュー共有プラットフォームのAPI仕様です。
+
+    ## 認証
+    - Cookie認証（sessionid）
+    - Basic認証（開発用）
+
+    ## 機能
+    - ユーザー管理
+    - 講義情報管理
+    - レビュー投稿・閲覧
+    - お問い合わせ
+
+servers:
+  - url: http://localhost:8000
+    description: 開発環境
+  - url: https://kaede-sx6k.onrender.com
+    description: 本番環境
+
+paths:
+  # Schema endpoint
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      summary: OpenAPI Schema取得
+      description: API仕様書のスキーマを取得
+      tags:
+        - schema
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, yaml]
+          description: レスポンス形式
+        - name: lang
+          in: query
+          schema:
+            type: string
+            enum: [ja, en]
+          description: 言語設定
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+            application/json:
+              schema:
+                type: object
+
+  # Users API
+  /api/users/:
+    get:
+      operationId: users_list
+      summary: ユーザー一覧取得
+      description: 登録されているユーザーの一覧を取得
+      tags:
+        - users
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: ページ番号
+        - name: university_name
+          in: query
+          schema:
+            type: string
+          description: 大学名でフィルタ
+        - name: faculty
+          in: query
+          schema:
+            type: string
+          description: 学部でフィルタ
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+    post:
+      operationId: users_create
+      summary: ユーザー作成
+      description: 新しいユーザーを作成
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /api/users/{id}/:
+    get:
+      operationId: users_retrieve
+      summary: ユーザー詳細取得
+      description: 指定されたIDのユーザー詳細を取得
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ユーザーが見つかりません
+    put:
+      operationId: users_update
+      summary: ユーザー更新
+      description: ユーザー情報を更新
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限なし
+        '404':
+          description: ユーザーが見つかりません
+    delete:
+      operationId: users_destroy
+      summary: ユーザー削除
+      description: ユーザーを削除
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限なし
+        '404':
+          description: ユーザーが見つかりません
+
+  # Lectures API
+  /api/lectures/:
+    get:
+      operationId: lectures_list
+      summary: 講義一覧取得
+      description: 講義の一覧を取得
+      tags:
+        - lectures
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: ページ番号
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: 講義名・教員名で検索
+        - name: faculty
+          in: query
+          schema:
+            type: string
+          description: 学部でフィルタ
+        - name: teacher_name
+          in: query
+          schema:
+            type: string
+          description: 教員名でフィルタ
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLectureList'
+    post:
+      operationId: lectures_create
+      summary: 講義作成
+      description: 新しい講義を登録
+      tags:
+        - lectures
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LectureCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureDetail'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+
+  /api/lectures/{id}/:
+    get:
+      operationId: lectures_retrieve
+      summary: 講義詳細取得
+      description: 講義の詳細情報を取得
+      tags:
+        - lectures
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 講義ID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureDetail'
+        '404':
+          description: 講義が見つかりません
+    put:
+      operationId: lectures_update
+      summary: 講義更新
+      description: 講義情報を更新
+      tags:
+        - lectures
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LectureUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureDetail'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+        '404':
+          description: 講義が見つかりません
+    delete:
+      operationId: lectures_destroy
+      summary: 講義削除
+      description: 講義を削除
+      tags:
+        - lectures
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限なし
+        '404':
+          description: 講義が見つかりません
+
+  /api/lectures/{lecture_id}/reviews/:
+    get:
+      operationId: lectures_reviews_list
+      summary: 講義のレビュー一覧
+      description: 指定された講義のレビュー一覧を取得
+      tags:
+        - lectures
+        - reviews
+      parameters:
+        - name: lecture_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 講義ID
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: ページ番号
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewList'
+        '404':
+          description: 講義が見つかりません
+
+  # Reviews API
+  /api/reviews/:
+    get:
+      operationId: reviews_list
+      summary: レビュー一覧取得
+      description: レビューの一覧を取得
+      tags:
+        - reviews
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: ページ番号
+        - name: lecture_id
+          in: query
+          schema:
+            type: integer
+          description: 講義IDでフィルタ
+        - name: user_id
+          in: query
+          schema:
+            type: integer
+          description: ユーザーIDでフィルタ
+        - name: attendance_year
+          in: query
+          schema:
+            type: integer
+          description: 履修年度でフィルタ
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReviewList'
+    post:
+      operationId: reviews_create
+      summary: レビュー作成
+      description: 新しいレビューを投稿
+      tags:
+        - reviews
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+
+  /api/reviews/{id}/:
+    get:
+      operationId: reviews_retrieve
+      summary: レビュー詳細取得
+      description: レビューの詳細を取得
+      tags:
+        - reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: レビューID
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          description: レビューが見つかりません
+    put:
+      operationId: reviews_update
+      summary: レビュー更新
+      description: レビューを更新
+      tags:
+        - reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限なし
+        '404':
+          description: レビューが見つかりません
+    delete:
+      operationId: reviews_destroy
+      summary: レビュー削除
+      description: レビューを削除
+      tags:
+        - reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限なし
+        '404':
+          description: レビューが見つかりません
+
+  # Contacts API
+  /api/contacts/:
+    get:
+      operationId: contacts_list
+      summary: お問い合わせ一覧取得
+      description: お問い合わせの一覧を取得（管理者用）
+      tags:
+        - contacts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+          description: ページ番号
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: カテゴリでフィルタ
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContactList'
+        '401':
+          description: 認証が必要
+        '403':
+          description: 管理者権限が必要
+    post:
+      operationId: contacts_create
+      summary: お問い合わせ送信
+      description: お問い合わせを送信
+      tags:
+        - contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactCreate'
+      responses:
+        '201':
+          description: 送信成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          description: バリデーションエラー
+
+  /api/contacts/{id}/:
+    get:
+      operationId: contacts_retrieve
+      summary: お問い合わせ詳細取得
+      description: お問い合わせの詳細を取得（管理者用）
+      tags:
+        - contacts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: お問い合わせID
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '401':
+          description: 認証が必要
+        '403':
+          description: 管理者権限が必要
+        '404':
+          description: お問い合わせが見つかりません
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    # Common schemas
+    ValidationError:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: エラーメッセージ
+        field_errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: フィールド別エラー
+
+    # User schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: ユーザーID
+        username:
+          type: string
+          maxLength: 150
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+        university_name:
+          type: string
+          maxLength: 100
+          description: 大学名
+        category:
+          type: string
+          maxLength: 50
+          description: 所属（学生・教員など）
+        faculty:
+          type: string
+          maxLength: 100
+          description: 学部
+        department:
+          type: string
+          maxLength: 100
+          description: 学科
+        admission_year:
+          type: integer
+          description: 入学年度
+        is_active:
+          type: boolean
+          description: アクティブフラグ
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: 作成日時
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: 更新日時
+      required:
+        - username
+        - email
+        - university_name
+        - category
+        - faculty
+        - department
+        - admission_year
+
+    UserCreate:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        university_name:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
+        faculty:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        admission_year:
+          type: integer
+      required:
+        - username
+        - email
+        - password
+        - university_name
+        - category
+        - faculty
+        - department
+        - admission_year
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 150
+        university_name:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 50
+        faculty:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        admission_year:
+          type: integer
+
+    PaginatedUserList:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: 総件数
+        next:
+          type: string
+          nullable: true
+          format: uri
+          description: 次のページURL
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          description: 前のページURL
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      required:
+        - count
+        - results
+
+    # Lecture schemas
+    Lecture:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: 講義ID
+        lecture_name:
+          type: string
+          maxLength: 200
+          description: 講義名
+        teacher_name:
+          type: string
+          maxLength: 100
+          description: 教員名
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - lecture_name
+        - teacher_name
+
+    LectureDetail:
+      allOf:
+        - $ref: '#/components/schemas/Lecture'
+        - type: object
+          properties:
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/LectureDetailInfo'
+              description: 講義詳細情報
+
+    LectureDetailInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        lecture_code:
+          type: string
+          maxLength: 50
+          description: 講義コード
+        syllabus_url:
+          type: string
+          format: uri
+          nullable: true
+          description: シラバスURL
+        location:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 開講場所
+        faculty:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 開講学部
+        category:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: 科目区分
+        grade:
+          type: string
+          maxLength: 20
+          nullable: true
+          description: 対象学年
+        times:
+          type: array
+          items:
+            $ref: '#/components/schemas/LectureTime'
+          description: 時間割情報
+      required:
+        - lecture_code
+
+    LectureTime:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        year:
+          type: integer
+          description: 開講年度
+        term:
+          type: string
+          maxLength: 20
+          description: 開講期（前期・後期など）
+        day_of_week:
+          type: string
+          maxLength: 10
+          description: 曜日
+        time_period:
+          type: string
+          maxLength: 20
+          description: 時限
+      required:
+        - year
+        - term
+        - day_of_week
+        - time_period
+
+    LectureCreate:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          maxLength: 200
+        teacher_name:
+          type: string
+          maxLength: 100
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/LectureDetailCreate'
+      required:
+        - lecture_name
+        - teacher_name
+
+    LectureDetailCreate:
+      type: object
+      properties:
+        lecture_code:
+          type: string
+          maxLength: 50
+        syllabus_url:
+          type: string
+          format: uri
+          nullable: true
+        location:
+          type: string
+          maxLength: 100
+          nullable: true
+        faculty:
+          type: string
+          maxLength: 100
+          nullable: true
+        category:
+          type: string
+          maxLength: 50
+          nullable: true
+        grade:
+          type: string
+          maxLength: 20
+          nullable: true
+        times:
+          type: array
+          items:
+            $ref: '#/components/schemas/LectureTimeCreate'
+      required:
+        - lecture_code
+
+    LectureTimeCreate:
+      type: object
+      properties:
+        year:
+          type: integer
+        term:
+          type: string
+          maxLength: 20
+        day_of_week:
+          type: string
+          maxLength: 10
+        time_period:
+          type: string
+          maxLength: 20
+      required:
+        - year
+        - term
+        - day_of_week
+        - time_period
+
+    LectureUpdate:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          maxLength: 200
+        teacher_name:
+          type: string
+          maxLength: 100
+
+    PaginatedLectureList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+          format: uri
+        previous:
+          type: string
+          nullable: true
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lecture'
+      required:
+        - count
+        - results
+
+    # Review schemas
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: レビューID
+        lecture:
+          $ref: '#/components/schemas/Lecture'
+        user:
+          $ref: '#/components/schemas/User'
+        attendance_year:
+          type: integer
+          nullable: true
+          description: 履修年度
+        attendance_confirm:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: 出席確認方法
+        weekly_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+          description: 毎週の課題
+        midterm_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+          description: 中間課題
+        final_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+          description: 期末課題
+        past_exam_possession:
+          type: string
+          maxLength: 100
+          nullable: true
+          description: 過去問の有無
+        grades:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: 成績評価方法
+        credit_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+          description: 単位取りやすさ（1-5）
+        interest_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+          description: 面白さ（1-5）
+        skill_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+          description: スキル習得度（1-5）
+        comments:
+          type: string
+          nullable: true
+          description: コメント
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ReviewCreate:
+      type: object
+      properties:
+        lecture_id:
+          type: integer
+          description: 講義ID
+        attendance_year:
+          type: integer
+          nullable: true
+        attendance_confirm:
+          type: string
+          maxLength: 50
+          nullable: true
+        weekly_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        midterm_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        final_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        past_exam_possession:
+          type: string
+          maxLength: 100
+          nullable: true
+        grades:
+          type: string
+          maxLength: 50
+          nullable: true
+        credit_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        interest_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        skill_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+      required:
+        - lecture_id
+
+    ReviewUpdate:
+      type: object
+      properties:
+        attendance_year:
+          type: integer
+          nullable: true
+        attendance_confirm:
+          type: string
+          maxLength: 50
+          nullable: true
+        weekly_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        midterm_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        final_assignments:
+          type: string
+          maxLength: 200
+          nullable: true
+        past_exam_possession:
+          type: string
+          maxLength: 100
+          nullable: true
+        grades:
+          type: string
+          maxLength: 50
+          nullable: true
+        credit_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        interest_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        skill_level:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+
+    PaginatedReviewList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+          format: uri
+        previous:
+          type: string
+          nullable: true
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+      required:
+        - count
+        - results
+
+    # Contact schemas
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: お問い合わせID
+        name:
+          type: string
+          maxLength: 100
+          description: 名前
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        category:
+          type: string
+          maxLength: 50
+          nullable: true
+          description: お問い合わせカテゴリ
+        message:
+          type: string
+          description: お問い合わせ内容
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: 送信日時
+      required:
+        - name
+        - email
+        - message
+
+    ContactCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        category:
+          type: string
+          maxLength: 50
+          nullable: true
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - message
+
+    PaginatedContactList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+          format: uri
+        previous:
+          type: string
+          nullable: true
+          format: uri
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+      required:
+        - count
+        - results
+
+tags:
+  - name: schema
+    description: API仕様書関連
+  - name: users
+    description: ユーザー管理
+  - name: lectures
+    description: 講義情報管理
+  - name: reviews
+    description: レビュー管理
+  - name: contacts
+    description: お問い合わせ

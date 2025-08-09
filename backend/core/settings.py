@@ -4,19 +4,14 @@ Django settings for core project.
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-only')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = ['*'] if DEBUG else ['.onrender.com']
 
-
-# Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
