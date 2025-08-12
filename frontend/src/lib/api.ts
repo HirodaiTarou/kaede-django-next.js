@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -33,10 +34,7 @@ export interface User {
 }
 
 export const userApi = {
-  getUsers: (): Promise<AxiosResponse<PaginatedResponse<User>>> => api.get('/users/'),
+  getUsers: (): Promise<AxiosResponse<PaginatedResponse<User>>> =>
+    api.get('/users/'),
   getUser: (id: number) => api.get<User>(`/users/${id}/`),
-};
-
-export const helloApi = {
-  getHello: () => api.get<{ message: string }>('/hello/'),
 };
