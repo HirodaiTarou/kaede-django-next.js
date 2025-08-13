@@ -24,8 +24,7 @@ servers:
     description: 本番環境
 
 paths:
-  # Authentication API
-  # 1. ユーザー登録・アカウント作成
+  # ユーザー登録・アカウント作成
   /api/v1/auth/register/:
     post:
       operationId: auth_register
@@ -334,7 +333,6 @@ paths:
         '404':
           description: ユーザーが見つかりません
 
-  # 統合候補取得API（講義名・教員名）
   /api/v1/lectures/suggestions/:
     post:
       operationId: lectures_suggest
@@ -357,7 +355,7 @@ paths:
         '400':
           description: バリデーションエラー
 
-
+  /api/v1/lectures/search/:
     post:
       operationId: lectures_search_detailed
       summary: 詳細検索（条件指定）
@@ -376,6 +374,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedLectureList'
+        '400':
+          description: バリデーションエラー
+
+  /api/v1/lectures/search-by-code/:
+    post:
+      operationId: lectures_search_by_code
+      summary: 講義コード検索（完全一致）
+      tags:
+        - lectures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                  description: 講義コード（完全一致検索）
+              required:
+                - code
+      responses:
+        '200':
+          description: 講義が見つかりました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LectureDetail'
+        '404':
+          description: 講義が見つかりません
         '400':
           description: バリデーションエラー
 
@@ -399,60 +428,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LectureDetail'
-        '404':
-          description: 講義が見つかりません
-    put:
-      operationId: lectures_update
-      summary: 講義更新
-      tags:
-        - lectures
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LectureUpdate'
-      responses:
-        '200':
-          description: 更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LectureDetail'
-        '400':
-          description: バリデーションエラー
-        '401':
-          description: 認証が必要
-        '404':
-          description: 講義が見つかりません
-    delete:
-      operationId: lectures_destroy
-      summary: 講義削除
-      tags:
-        - lectures
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: 削除成功
-        '401':
-          description: 認証が必要
-        '403':
-          description: 権限なし
         '404':
           description: 講義が見つかりません
 
@@ -486,35 +461,28 @@ paths:
         '404':
           description: 講義が見つかりません
 
-  # Reviews API (実装予定)
-  /api/v1/reviews/:
+  # ユーザーに紐づくレビュー一覧
+  /api/v1/users/{user_id}/reviews/:
     get:
-      operationId: reviews_list
-      summary: レビュー一覧取得
+      operationId: users_reviews_list
+      summary: ユーザーのレビュー一覧取得
       tags:
+        - users
         - reviews
       parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
         - name: page
           in: query
           schema:
             type: integer
             minimum: 1
           description: ページ番号
-        - name: lecture_id
-          in: query
-          schema:
-            type: integer
-          description: 講義IDでフィルタ
-        - name: user_id
-          in: query
-          schema:
-            type: integer
-          description: ユーザーIDでフィルタ
-        - name: attendance_year
-          in: query
-          schema:
-            type: integer
-          description: 履修年度でフィルタ
+
       responses:
         '200':
           description: 成功
@@ -522,6 +490,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedReviewList'
+        '404':
+          description: ユーザーが見つかりません
     post:
       operationId: reviews_create
       summary: レビュー作成
@@ -626,38 +596,8 @@ paths:
         '404':
           description: レビューが見つかりません
 
-  # Contacts API (実装予定)
+  # Contacts API
   /api/v1/contacts/:
-    get:
-      operationId: contacts_list
-      summary: お問い合わせ一覧取得
-      tags:
-        - contacts
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-          description: ページ番号
-        - name: category
-          in: query
-          schema:
-            type: string
-          description: カテゴリでフィルタ
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedContactList'
-        '401':
-          description: 認証が必要
-        '403':
-          description: 管理者権限が必要
     post:
       operationId: contacts_create
       summary: お問い合わせ送信
@@ -679,37 +619,6 @@ paths:
         '400':
           description: バリデーションエラー
 
-  /api/v1/contacts/{id}/:
-    get:
-      operationId: contacts_retrieve
-      summary: お問い合わせ詳細取得
-      tags:
-        - contacts
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: お問い合わせID
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Contact'
-        '401':
-          description: 認証が必要
-        '403':
-          description: 管理者権限が必要
-        '404':
-          description: お問い合わせが見つかりません
-
-
-
 components:
   securitySchemes:
     bearerAuth:
@@ -720,7 +629,6 @@ components:
 
   schemas:
     # 1. Authentication schemas (認証関連)
-    # 1-1. ユーザー登録・アカウント作成
     RegisterRequest:
       type: object
       properties:
@@ -763,9 +671,6 @@ components:
         - password
         - university_name
         - category
-        - faculty
-        - department
-        - admission_year
 
     RegisterResponse:
       type: object
@@ -784,7 +689,6 @@ components:
         - user_id
         - email_verified
 
-    # 1-2. メール認証・アカウント有効化
     EmailVerificationRequest:
       type: object
       properties:
@@ -831,7 +735,6 @@ components:
       required:
         - message
 
-    # 1-3. ログイン・セッション開始
     LoginRequest:
       type: object
       properties:
@@ -864,7 +767,6 @@ components:
         - refresh
         - user
 
-    # 1-4. セッション管理・トークン更新
     RefreshRequest:
       type: object
       properties:
@@ -883,7 +785,6 @@ components:
       required:
         - access
 
-    # 1-5. パスワード管理・セキュリティ機能
     PasswordResetRequest:
       type: object
       properties:
@@ -1007,6 +908,36 @@ components:
       - created_at
       - updated_at
 
+    UserCreate:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        university_name:
+          type: string
+          maxLength: 100
+        category:
+          type: string
+          maxLength: 100
+        faculty:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        admission_year:
+          type: integer
+      required:
+        - username
+        - email
+        - university_name
+        - category
+
     UserUpdate:
       type: object
       properties:
@@ -1029,6 +960,95 @@ components:
           type: integer
 
     # 3. Lecture schemas (講義関連)
+    SuggestionRequest:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 講義名検索クエリ（オプショナル）
+        teacher_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 教員名検索クエリ（オプショナル）
+      required: []
+
+    SuggestionResponse:
+      type: object
+      properties:
+        search_conditions:
+          type: object
+          properties:
+            lecture_name:
+              type: string
+              nullable: true
+              description: 指定された講義名検索クエリ
+            teacher_name:
+              type: string
+              nullable: true
+              description: 指定された教員名検索クエリ
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lecture'
+          description: 検索結果（バックエンドで固定件数制限）
+        total_count:
+          type: integer
+          description: 総候補数
+
+    DetailedSearchRequest:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          description: 講義名（完全一致または部分一致）
+        teacher_name:
+          type: string
+          description: 教員名（完全一致または部分一致）
+        location:
+          type: string
+          description: 開講場所
+        faculty:
+          type: string
+          description: 開講学部
+        category:
+          type: string
+          description: 開講区分
+        term:
+          type: string
+          enum: [前期, 後期, 通年, 集中]
+          description: ターム
+        day_of_week:
+          type: string
+          enum: [月, 火, 水, 木, 金, 土, 日]
+          description: 曜日
+        time_period:
+          type: string
+          description: 時間（例：1限、2限）
+        grade_year:
+          type: integer
+          description: 履修年次
+
+    # 検索結果用の講義スキーマ（レビュー集計値付き）
+    LectureWithReviews:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Lecture'
+        - type: object
+          properties:
+            # レビュー集計値
+            average_overall_score:
+              type: number
+              format: float
+              nullable: true
+              description: 総合評価の平均（1-5）
+            review_count:
+              type: integer
+              minimum: 0
+              description: レビュー数
+
     Lecture:
       type: object
       properties:
@@ -1061,54 +1081,40 @@ components:
         - $ref: '#/components/schemas/Lecture'
         - type: object
           properties:
-            details:
+            lecture_code:
+              type: string
+              maxLength: 50
+              description: 講義コード
+            syllabus_url:
+              type: string
+              format: uri
+              nullable: true
+              description: シラバスURL
+            location:
+              type: string
+              maxLength: 100
+              nullable: true
+              description: 開講場所
+            faculty:
+              type: string
+              maxLength: 100
+              nullable: true
+              description: 開講学部
+            category:
+              type: string
+              maxLength: 50
+              nullable: true
+              description: 科目区分
+            grade:
+              type: string
+              maxLength: 20
+              nullable: true
+              description: 対象学年
+            times:
               type: array
               items:
-                $ref: '#/components/schemas/LectureDetailInfo'
-              description: 講義詳細情報
-
-    LectureDetailInfo:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        lecture_code:
-          type: string
-          maxLength: 50
-          description: 講義コード
-        syllabus_url:
-          type: string
-          format: uri
-          nullable: true
-          description: シラバスURL
-        location:
-          type: string
-          maxLength: 100
-          nullable: true
-          description: 開講場所
-        faculty:
-          type: string
-          maxLength: 100
-          nullable: true
-          description: 開講学部
-        category:
-          type: string
-          maxLength: 50
-          nullable: true
-          description: 科目区分
-        grade:
-          type: string
-          maxLength: 20
-          nullable: true
-          description: 対象学年
-        times:
-          type: array
-          items:
-            $ref: '#/components/schemas/LectureTime'
-          description: 時間割情報
-      required:
-        - lecture_code
+                $ref: '#/components/schemas/LectureTime'
+              description: 時間割情報
 
     LectureTime:
       type: object
@@ -1137,103 +1143,28 @@ components:
         - day_of_week
         - time_period
 
-    LectureCreate:
-      type: object
-      properties:
-        lecture_name:
-          type: string
-          maxLength: 200
-        teacher_name:
-          type: string
-          maxLength: 100
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/LectureDetailCreate'
-      required:
-        - lecture_name
-        - teacher_name
-
-    LectureDetailCreate:
-      type: object
-      properties:
-        lecture_code:
-          type: string
-          maxLength: 50
-        syllabus_url:
-          type: string
-          format: uri
-          nullable: true
-        location:
-          type: string
-          maxLength: 100
-          nullable: true
-        faculty:
-          type: string
-          maxLength: 100
-          nullable: true
-        category:
-          type: string
-          maxLength: 50
-          nullable: true
-        grade:
-          type: string
-          maxLength: 20
-          nullable: true
-        times:
-          type: array
-          items:
-            $ref: '#/components/schemas/LectureTimeCreate'
-      required:
-        - lecture_code
-
-    LectureTimeCreate:
-      type: object
-      properties:
-        year:
-          type: integer
-        term:
-          type: string
-          maxLength: 20
-        day_of_week:
-          type: string
-          maxLength: 10
-        time_period:
-          type: string
-          maxLength: 20
-      required:
-        - year
-        - term
-        - day_of_week
-        - time_period
-
-    LectureUpdate:
-      type: object
-      properties:
-        lecture_name:
-          type: string
-          maxLength: 200
-        teacher_name:
-          type: string
-          maxLength: 100
-
     PaginatedLectureList:
       type: object
       properties:
         count:
           type: integer
+          description: 検索結果の総件数
         next:
           type: string
           nullable: true
           format: uri
+          description: 次のページのURL
         previous:
           type: string
           nullable: true
           format: uri
+          description: 前のページのURL
         results:
           type: array
           items:
-            $ref: '#/components/schemas/Lecture'
+            $ref: '#/components/schemas/LectureWithReviews'
+          description: 講義一覧（レビュー集計値付き）
+
       required:
         - count
         - results
@@ -1256,34 +1187,46 @@ components:
           description: 履修年度
         attendance_confirm:
           type: string
-          maxLength: 50
+          enum: [no, sometimes, always]
           nullable: true
           description: 出席確認方法
-        weekly_assignments:
-          type: string
-          maxLength: 200
+        weekly_reports:
+          type: boolean
           nullable: true
-          description: 毎週の課題
-        midterm_assignments:
-          type: string
-          maxLength: 200
+          description: 毎週のレポート
+        weekly_tests:
+          type: boolean
           nullable: true
-          description: 中間課題
-        final_assignments:
-          type: string
-          maxLength: 200
+          description: 毎週のテスト
+        midterm_reports:
+          type: boolean
           nullable: true
-          description: 期末課題
-        past_exam_possession:
-          type: string
-          maxLength: 100
+          description: 中間レポート
+        midterm_tests:
+          type: boolean
           nullable: true
-          description: 過去問の有無
+          description: 中間テスト
+        final_reports:
+          type: boolean
+          nullable: true
+          description: 期末レポート
+        final_tests:
+          type: boolean
+          nullable: true
+          description: 期末テスト
+        past_report_possession:
+          type: boolean
+          nullable: true
+          description: 過去のレポート所持
+        past_test_possession:
+          type: boolean
+          nullable: true
+          description: 過去のテスト所持
         grades:
           type: string
-          maxLength: 50
+          enum: [excellent, very_good, good, pass, fail, undecided]
           nullable: true
-          description: 成績評価方法
+          description: 成績評価
         credit_level:
           type: integer
           minimum: 1
@@ -1304,6 +1247,7 @@ components:
           description: スキル習得度（1-5）
         comments:
           type: string
+          maxLength: 1000
           nullable: true
           description: コメント
         created_at:
@@ -1326,27 +1270,35 @@ components:
           nullable: true
         attendance_confirm:
           type: string
-          maxLength: 50
+          enum: [no, sometimes, always]
           nullable: true
-        weekly_assignments:
-          type: string
-          maxLength: 200
+        weekly_reports:
+          type: boolean
           nullable: true
-        midterm_assignments:
-          type: string
-          maxLength: 200
+        weekly_tests:
+          type: boolean
           nullable: true
-        final_assignments:
-          type: string
-          maxLength: 200
+        midterm_reports:
+          type: boolean
           nullable: true
-        past_exam_possession:
-          type: string
-          maxLength: 100
+        midterm_tests:
+          type: boolean
+          nullable: true
+        final_reports:
+          type: boolean
+          nullable: true
+        final_tests:
+          type: boolean
+          nullable: true
+        past_report_possession:
+          type: boolean
+          nullable: true
+        past_test_possession:
+          type: boolean
           nullable: true
         grades:
           type: string
-          maxLength: 50
+          enum: [excellent, very_good, good, pass, fail, undecided]
           nullable: true
         credit_level:
           type: integer
@@ -1365,6 +1317,7 @@ components:
           nullable: true
         comments:
           type: string
+          maxLength: 1000
           nullable: true
       required:
         - lecture_id
@@ -1377,27 +1330,35 @@ components:
           nullable: true
         attendance_confirm:
           type: string
-          maxLength: 50
+          enum: [no, sometimes, always]
           nullable: true
-        weekly_assignments:
-          type: string
-          maxLength: 200
+        weekly_reports:
+          type: boolean
           nullable: true
-        midterm_assignments:
-          type: string
-          maxLength: 200
+        weekly_tests:
+          type: boolean
           nullable: true
-        final_assignments:
-          type: string
-          maxLength: 200
+        midterm_reports:
+          type: boolean
           nullable: true
-        past_exam_possession:
-          type: string
-          maxLength: 100
+        midterm_tests:
+          type: boolean
+          nullable: true
+        final_reports:
+          type: boolean
+          nullable: true
+        final_tests:
+          type: boolean
+          nullable: true
+        past_report_possession:
+          type: boolean
+          nullable: true
+        past_test_possession:
+          type: boolean
           nullable: true
         grades:
           type: string
-          maxLength: 50
+          enum: [excellent, very_good, good, pass, fail, undecided]
           nullable: true
         credit_level:
           type: integer
@@ -1416,6 +1377,7 @@ components:
           nullable: true
         comments:
           type: string
+          maxLength: 1000
           nullable: true
 
     PaginatedReviewList:
@@ -1493,26 +1455,7 @@ components:
         - email
         - message
 
-    PaginatedContactList:
-      type: object
-      properties:
-        count:
-          type: integer
-        next:
-          type: string
-          nullable: true
-          format: uri
-        previous:
-          type: string
-          nullable: true
-          format: uri
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Contact'
-      required:
-        - count
-        - results
+
 
     # 6. Common schemas (共通・エラー)
     ValidationError:
@@ -1528,77 +1471,6 @@ components:
             items:
               type: string
           description: フィールド別エラー
-
-    SuggestionRequest:
-      type: object
-      properties:
-        lecture_name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: 講義名検索クエリ（オプショナル）
-        teacher_name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: 教員名検索クエリ（オプショナル）
-      required: []
-
-    SuggestionResponse:
-      type: object
-      properties:
-        search_conditions:
-          type: object
-          properties:
-            lecture_name:
-              type: string
-              nullable: true
-              description: 指定された講義名検索クエリ
-            teacher_name:
-              type: string
-              nullable: true
-              description: 指定された教員名検索クエリ
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Lecture'
-          description: 検索結果（バックエンドで固定件数制限）
-        total_count:
-          type: integer
-          description: 総候補数
-
-    DetailedSearchRequest:
-      type: object
-      properties:
-        lecture_name:
-          type: string
-          description: 講義名（完全一致または部分一致）
-        teacher_name:
-          type: string
-          description: 教員名（完全一致または部分一致）
-        location:
-          type: string
-          description: 開講場所
-        faculty:
-          type: string
-          description: 開講学部
-        category:
-          type: string
-          description: 開講区分
-        term:
-          type: string
-          enum: [前期, 後期, 通年, 集中]
-          description: ターム
-        day_of_week:
-          type: string
-          enum: [月, 火, 水, 木, 金, 土, 日]
-          description: 曜日
-        time_period:
-          type: string
-          description: 時間（例：1限、2限）
-        grade_year:
-          type: integer
-          description: 履修年次
 
 
 tags:
