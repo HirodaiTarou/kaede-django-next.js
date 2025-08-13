@@ -5,9 +5,6 @@ info:
   description: |
     Kaede大学講義レビューシステムのAPI仕様書
 
-    ## 概要
-    大学生向けの講義レビュー共有プラットフォームのAPI仕様です。
-
     ## 認証方式
     JWT（JSON Web Token）認証を使用：
     - アクセストークン（短期間有効）
@@ -27,39 +24,215 @@ servers:
     description: 本番環境
 
 paths:
-  # /api/schema/はAPI仕様書の生成に使用するため、ここには記載しない
-
-  # Users API (実装済み)
-  /api/users/:
-    get:
-      operationId: users_list
-      summary: ユーザー一覧取得
-      description: 登録されているユーザーの一覧を取得
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
+  # Authentication API
+  # 1. ユーザー登録・アカウント作成
+  /api/v1/auth/register/:
+    post:
+      operationId: auth_register
+      summary: ユーザー登録（仮登録）
       tags:
-      - users
-      security:
-      - bearerAuth: []
-      - {}
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: バリデーションエラー
+        '409':
+          description: ユーザーが既に存在
+
+  # 2. メール認証・アカウント有効化
+  /api/v1/auth/verify-email/:
+    post:
+      operationId: auth_verify_email
+      summary: メールアドレス認証
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+      responses:
+        '200':
+          description: 認証成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailVerificationResponse'
+        '400':
+          description: バリデーションエラー
+        '404':
+          description: ユーザーが見つかりません
+        '410':
+          description: トークンが無効または期限切れ
+
+  /api/v1/auth/resend-verification/:
+    post:
+      operationId: auth_resend_verification
+      summary: 認証メール再送信
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationRequest'
+      responses:
+        '200':
+          description: 再送信成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendVerificationResponse'
+        '400':
+          description: バリデーションエラー
+        '404':
+          description: ユーザーが見つかりません
+        '429':
+          description: 送信回数制限
+
+  # 3. ログイン・セッション開始
+  /api/v1/auth/login/:
+    post:
+      operationId: auth_login
+      summary: ユーザーログイン
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserList'
-          description: ''
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証失敗
 
-  /api/users/{id}/:
+  # 4. セッション管理・トークン更新
+  /api/v1/auth/refresh/:
+    post:
+      operationId: auth_refresh
+      summary: トークンリフレッシュ
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: リフレッシュトークンが無効
+
+  # 5. パスワード管理・セキュリティ機能
+  /api/v1/auth/password/reset/:
+    post:
+      operationId: auth_password_reset
+      summary: パスワードリセットリンク送信
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: リセットリンク送信成功
+        '400':
+          description: バリデーションエラー
+        '404':
+          description: ユーザーが見つかりません
+
+  /api/v1/auth/password/reset/confirm/:
+    post:
+      operationId: auth_password_reset_confirm
+      summary: パスワードリセット実行
+      tags:
+        - authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+      responses:
+        '200':
+          description: パスワードリセット成功
+        '400':
+          description: バリデーションエラー
+        '404':
+          description: ユーザーが見つかりません
+
+  /api/v1/auth/password/change/:
+    post:
+      operationId: auth_password_change
+      summary: パスワード変更
+      tags:
+        - authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+      responses:
+        '200':
+          description: パスワード変更成功
+        '400':
+          description: バリデーションエラー
+        '401':
+          description: 認証が必要
+
+  # 6. ログアウト・セッション終了
+  /api/v1/auth/logout/:
+    post:
+      operationId: auth_logout
+      summary: ユーザーログアウト
+      tags:
+        - authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ログアウト成功
+        '401':
+          description: 認証が必要
+
+  /api/v1/users/{id}/:
     get:
       operationId: users_retrieve
       summary: ユーザー詳細取得
-      description: 指定されたIDのユーザー詳細を取得
       parameters:
       - in: path
         name: id
@@ -69,25 +242,18 @@ paths:
       tags:
       - users
       security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
+      - bearerAuth: []
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-          description: ''
 
-  # 以下はこれから実装予定のAPI（設計書として残す）
-
-  # Users API (実装予定)
-  /api/users/:
+  /api/v1/users/:
     post:
       operationId: users_create
       summary: ユーザー作成
-      description: 新しいユーザーを作成
       tags:
         - users
       requestBody:
@@ -110,11 +276,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationError'
 
-  /api/users/{id}/:
+  /api/v1/users/{id}/:
     put:
       operationId: users_update
       summary: ユーザー更新
-      description: ユーザー情報を更新
       tags:
         - users
       parameters:
@@ -124,8 +289,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -150,7 +314,6 @@ paths:
     delete:
       operationId: users_destroy
       summary: ユーザー削除
-      description: ユーザーを削除
       tags:
         - users
       parameters:
@@ -160,8 +323,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       responses:
         '204':
           description: 削除成功
@@ -172,36 +334,41 @@ paths:
         '404':
           description: ユーザーが見つかりません
 
-  # Lectures API (実装予定)
-  /api/lectures/:
-    get:
-      operationId: lectures_list
-      summary: 講義一覧取得
-      description: 講義の一覧を取得
+  # 統合候補取得API（講義名・教員名）
+  /api/v1/lectures/suggestions/:
+    post:
+      operationId: lectures_suggest
+      summary: 講義名・教員名候補取得（部分一致検索）
       tags:
         - lectures
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-          description: ページ番号
-        - name: search
-          in: query
-          schema:
-            type: string
-          description: 講義名・教員名で検索
-        - name: faculty
-          in: query
-          schema:
-            type: string
-          description: 学部でフィルタ
-        - name: teacher_name
-          in: query
-          schema:
-            type: string
-          description: 教員名でフィルタ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestionRequest'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionResponse'
+        '400':
+          description: バリデーションエラー
+
+
+    post:
+      operationId: lectures_search_detailed
+      summary: 詳細検索（条件指定）
+      tags:
+        - lectures
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetailedSearchRequest'
       responses:
         '200':
           description: 成功
@@ -209,38 +376,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedLectureList'
-    post:
-      operationId: lectures_create
-      summary: 講義作成
-      description: 新しい講義を登録
-      tags:
-        - lectures
-      security:
-        - cookieAuth: []
-        - basicAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LectureCreate'
-      responses:
-        '201':
-          description: 作成成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LectureDetail'
         '400':
           description: バリデーションエラー
-        '401':
-          description: 認証が必要
 
-  /api/lectures/{id}/:
+  /api/v1/lectures/{id}/:
     get:
       operationId: lectures_retrieve
       summary: 講義詳細取得
-      description: 講義の詳細情報を取得
       tags:
         - lectures
       parameters:
@@ -262,7 +404,6 @@ paths:
     put:
       operationId: lectures_update
       summary: 講義更新
-      description: 講義情報を更新
       tags:
         - lectures
       parameters:
@@ -272,8 +413,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -296,7 +436,6 @@ paths:
     delete:
       operationId: lectures_destroy
       summary: 講義削除
-      description: 講義を削除
       tags:
         - lectures
       parameters:
@@ -306,8 +445,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       responses:
         '204':
           description: 削除成功
@@ -318,11 +456,10 @@ paths:
         '404':
           description: 講義が見つかりません
 
-  /api/lectures/{lecture_id}/reviews/:
+  /api/v1/lectures/{lecture_id}/reviews/:
     get:
       operationId: lectures_reviews_list
       summary: 講義のレビュー一覧
-      description: 指定された講義のレビュー一覧を取得
       tags:
         - lectures
         - reviews
@@ -350,11 +487,10 @@ paths:
           description: 講義が見つかりません
 
   # Reviews API (実装予定)
-  /api/reviews/:
+  /api/v1/reviews/:
     get:
       operationId: reviews_list
       summary: レビュー一覧取得
-      description: レビューの一覧を取得
       tags:
         - reviews
       parameters:
@@ -389,12 +525,10 @@ paths:
     post:
       operationId: reviews_create
       summary: レビュー作成
-      description: 新しいレビューを投稿
       tags:
         - reviews
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -413,11 +547,10 @@ paths:
         '401':
           description: 認証が必要
 
-  /api/reviews/{id}/:
+  /api/v1/reviews/{id}/:
     get:
       operationId: reviews_retrieve
       summary: レビュー詳細取得
-      description: レビューの詳細を取得
       tags:
         - reviews
       parameters:
@@ -439,7 +572,6 @@ paths:
     put:
       operationId: reviews_update
       summary: レビュー更新
-      description: レビューを更新
       tags:
         - reviews
       parameters:
@@ -449,8 +581,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -475,7 +606,6 @@ paths:
     delete:
       operationId: reviews_destroy
       summary: レビュー削除
-      description: レビューを削除
       tags:
         - reviews
       parameters:
@@ -485,8 +615,7 @@ paths:
           schema:
             type: integer
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       responses:
         '204':
           description: 削除成功
@@ -498,11 +627,10 @@ paths:
           description: レビューが見つかりません
 
   # Contacts API (実装予定)
-  /api/contacts/:
+  /api/v1/contacts/:
     get:
       operationId: contacts_list
       summary: お問い合わせ一覧取得
-      description: お問い合わせの一覧を取得（管理者用）
       tags:
         - contacts
       parameters:
@@ -518,8 +646,7 @@ paths:
             type: string
           description: カテゴリでフィルタ
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: 成功
@@ -534,7 +661,6 @@ paths:
     post:
       operationId: contacts_create
       summary: お問い合わせ送信
-      description: お問い合わせを送信
       tags:
         - contacts
       requestBody:
@@ -553,11 +679,10 @@ paths:
         '400':
           description: バリデーションエラー
 
-  /api/contacts/{id}/:
+  /api/v1/contacts/{id}/:
     get:
       operationId: contacts_retrieve
       summary: お問い合わせ詳細取得
-      description: お問い合わせの詳細を取得（管理者用）
       tags:
         - contacts
       parameters:
@@ -568,8 +693,7 @@ paths:
             type: integer
           description: お問い合わせID
       security:
-        - cookieAuth: []
-        - basicAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: 成功
@@ -584,6 +708,8 @@ paths:
         '404':
           description: お問い合わせが見つかりません
 
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -591,42 +717,230 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT認証トークン（Authorization: Bearer <token>）
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: sessionid
-      description: セッション認証（開発用）
-    basicAuth:
-      type: http
-      scheme: basic
-      description: Basic認証（開発用）
 
   schemas:
-    # 実装済みのスキーマ（自動生成されたものと同じ）
-    PaginatedUserList:
+    # 1. Authentication schemas (認証関連)
+    # 1-1. ユーザー登録・アカウント作成
+    RegisterRequest:
       type: object
-      required:
-      - count
-      - results
       properties:
-        count:
+        username:
+          type: string
+          maxLength: 50
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+          description: パスワード
+        university_name:
+          type: string
+          maxLength: 100
+          description: 大学名
+        category:
+          type: string
+          maxLength: 100
+          description: 所属
+        faculty:
+          type: string
+          maxLength: 100
+          description: 学部
+        department:
+          type: string
+          maxLength: 100
+          description: 学科
+        admission_year:
           type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
+          description: 入学年度
+      required:
+        - username
+        - email
+        - password
+        - university_name
+        - category
+        - faculty
+        - department
+        - admission_year
 
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 登録完了メッセージ
+        user_id:
+          type: integer
+          description: 作成されたユーザーID
+        email_verified:
+          type: boolean
+          description: メール認証状態
+      required:
+        - message
+        - user_id
+        - email_verified
+
+    # 1-2. メール認証・アカウント有効化
+    EmailVerificationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          description: メール認証トークン
+        user_id:
+          type: integer
+          description: ユーザーID
+      required:
+        - token
+        - user_id
+
+    EmailVerificationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 認証完了メッセージ
+        email_verified:
+          type: boolean
+          description: メール認証状態
+      required:
+        - message
+        - email_verified
+
+    ResendVerificationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+      required:
+        - email
+
+    ResendVerificationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 再送信完了メッセージ
+      required:
+        - message
+
+    # 1-3. ログイン・セッション開始
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+        password:
+          type: string
+          minLength: 8
+          description: パスワード
+      required:
+        - email
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        access:
+          type: string
+          description: アクセストークン
+        refresh:
+          type: string
+          description: リフレッシュトークン
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - access
+        - refresh
+        - user
+
+    # 1-4. セッション管理・トークン更新
+    RefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          description: リフレッシュトークン
+      required:
+        - refresh
+
+    RefreshResponse:
+      type: object
+      properties:
+        access:
+          type: string
+          description: 新しいアクセストークン
+      required:
+        - access
+
+    # 1-5. パスワード管理・セキュリティ機能
+    PasswordResetRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+      required:
+        - email
+
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          description: パスワードリセットトークン
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          description: メールアドレス
+        password:
+          type: string
+          minLength: 8
+          description: 新しいパスワード
+        password_confirm:
+          type: string
+          minLength: 8
+          description: パスワード確認
+      required:
+        - token
+        - email
+        - password
+        - password_confirm
+
+    PasswordChangeRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          minLength: 8
+          description: 現在のパスワード
+        new_password:
+          type: string
+          minLength: 8
+          description: 新しいパスワード
+        new_password_confirm:
+          type: string
+          minLength: 8
+          description: 新しいパスワード確認
+      required:
+        - old_password
+        - new_password
+        - new_password_confirm
+
+    # 2. User schemas (ユーザー関連)
     User:
       type: object
       properties:
@@ -637,7 +951,7 @@ components:
         username:
           type: string
           title: ユーザー名
-          maxLength: 150
+          maxLength: 50
         email:
           type: string
           format: email
@@ -650,7 +964,7 @@ components:
         category:
           type: string
           title: 所属
-          maxLength: 50
+          maxLength: 100
         faculty:
           type: string
           title: 学部
@@ -667,6 +981,9 @@ components:
         is_active:
           type: boolean
           title: アクティブ
+        email_verified:
+          type: boolean
+          title: メール認証完了
         created_at:
           type: string
           format: date-time
@@ -678,85 +995,30 @@ components:
           readOnly: true
           title: 更新時間
       required:
-      - admission_year
-      - category
-      - created_at
-      - department
-      - email
-      - faculty
-      - id
-      - university_name
-      - updated_at
       - username
-
-    # これから実装予定のスキーマ（設計書として残す）
-
-    # Common schemas
-    ValidationError:
-      type: object
-      properties:
-        detail:
-          type: string
-          description: エラーメッセージ
-        field_errors:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
-          description: フィールド別エラー
-
-    # User schemas (実装予定)
-    UserCreate:
-      type: object
-      properties:
-        username:
-          type: string
-          maxLength: 150
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        password:
-          type: string
-          writeOnly: true
-          minLength: 8
-        university_name:
-          type: string
-          maxLength: 100
-        category:
-          type: string
-          maxLength: 50
-        faculty:
-          type: string
-          maxLength: 100
-        department:
-          type: string
-          maxLength: 100
-        admission_year:
-          type: integer
-      required:
-        - username
-        - email
-        - password
-        - university_name
-        - category
-        - faculty
-        - department
-        - admission_year
+      - email
+      - university_name
+      - category
+      - faculty
+      - department
+      - admission_year
+      - is_active
+      - email_verified
+      - created_at
+      - updated_at
 
     UserUpdate:
       type: object
       properties:
         username:
           type: string
-          maxLength: 150
+          maxLength: 50
         university_name:
           type: string
           maxLength: 100
         category:
           type: string
-          maxLength: 50
+          maxLength: 100
         faculty:
           type: string
           maxLength: 100
@@ -766,7 +1028,7 @@ components:
         admission_year:
           type: integer
 
-    # Lecture schemas (実装予定)
+    # 3. Lecture schemas (講義関連)
     Lecture:
       type: object
       properties:
@@ -976,7 +1238,7 @@ components:
         - count
         - results
 
-    # Review schemas (実装予定)
+    # 4. Review schemas (レビュー関連)
     Review:
       type: object
       properties:
@@ -1177,7 +1439,7 @@ components:
         - count
         - results
 
-    # Contact schemas (実装予定)
+    # 5. Contact schemas (お問い合わせ関連)
     Contact:
       type: object
       properties:
@@ -1252,9 +1514,112 @@ components:
         - count
         - results
 
+    # 6. Common schemas (共通・エラー)
+    ValidationError:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: エラーメッセージ
+        field_errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          description: フィールド別エラー
+
+    SuggestionRequest:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 講義名検索クエリ（オプショナル）
+        teacher_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 教員名検索クエリ（オプショナル）
+      required: []
+
+    SuggestionResponse:
+      type: object
+      properties:
+        search_conditions:
+          type: object
+          properties:
+            lecture_name:
+              type: string
+              nullable: true
+              description: 指定された講義名検索クエリ
+            teacher_name:
+              type: string
+              nullable: true
+              description: 指定された教員名検索クエリ
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lecture'
+          description: 検索結果（バックエンドで固定件数制限）
+        total_count:
+          type: integer
+          description: 総候補数
+
+
+
+    # 詳細検索リクエスト用スキーマ
+    DetailedSearchRequest:
+      type: object
+      properties:
+        lecture_name:
+          type: string
+          description: 講義名（完全一致または部分一致）
+        teacher_name:
+          type: string
+          description: 教員名（完全一致または部分一致）
+        location:
+          type: string
+          description: 開講場所
+        faculty:
+          type: string
+          description: 開講学部
+        category:
+          type: string
+          description: 開講区分
+        term:
+          type: string
+          enum: [前期, 後期, 通年, 集中]
+          description: ターム
+        day_of_week:
+          type: string
+          enum: [月, 火, 水, 木, 金, 土, 日]
+          description: 曜日
+        time_period:
+          type: string
+          description: 時間（例：1限、2限）
+        grade_year:
+          type: integer
+          description: 履修年次
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+          description: ページ番号
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: ページサイズ
+      required:
+        - page
+        - page_size
+
 tags:
-  - name: schema
-    description: API仕様書関連
+  - name: authentication
+    description: 認証・認可
   - name: users
     description: ユーザー管理
   - name: lectures
