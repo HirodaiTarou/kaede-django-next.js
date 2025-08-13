@@ -1567,9 +1567,6 @@ components:
           type: integer
           description: 総候補数
 
-
-
-    # 詳細検索リクエスト用スキーマ
     DetailedSearchRequest:
       type: object
       properties:
@@ -1602,20 +1599,7 @@ components:
         grade_year:
           type: integer
           description: 履修年次
-        page:
-          type: integer
-          minimum: 1
-          default: 1
-          description: ページ番号
-        page_size:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-          description: ページサイズ
-      required:
-        - page
-        - page_size
+
 
 tags:
   - name: authentication
