@@ -34,18 +34,18 @@ jobs:
           JWT_UPDATE_LAST_LOGIN: "True"
         run: |
           # PostgreSQLサービスを起動
-          docker-compose up -d db
+          docker compose up -d db
 
           # データベースの準備ができるまで待機
           echo "Waiting for database to be ready..."
           timeout 60 bash -c 'until docker-compose exec -T db pg_isready -U kaede -d kaede; do sleep 2; done'
 
           # バックエンドサービスを起動（テスト用）
-          docker-compose run --rm backend python manage.py migrate
-          docker-compose run --rm backend python manage.py test --verbosity=2
+          docker compose run --rm backend python manage.py migrate
+          docker compose run --rm backend python manage.py test --verbosity=2
 
           # クリーンアップ
-          docker-compose down
+          docker compose down
 
       # フロントエンドテスト（Node.js）
       - name: Setup node
