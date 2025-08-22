@@ -19,6 +19,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create .env file for CI
+        run: |
+          cat > backend/.env << EOF
+          SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+          DEBUG=True
+          DATABASE_URL=postgresql://kaede:kaede@db:5432/kaede
+          JWT_ACCESS_TOKEN_HOURS=1
+          JWT_REFRESH_TOKEN_DAYS=1
+          JWT_ROTATE_REFRESH_TOKENS=True
+          JWT_UPDATE_LAST_LOGIN=True
+          EOF
+
+      - name: Run backend tests with Docker Compose
+        run: |
+          docker compose up -d db
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U kaede -d kaede; do sleep 2; done'
+          docker compose run --rm backend python manage.py migrate
+          docker compose run --rm backend python manage.py test --verbosity=2
+          docker compose down
+
+      # フロントエンドテスト（Node.js）
       - name: Setup node
         uses: actions/setup-node@v4
         with:
