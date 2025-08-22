@@ -94,6 +94,7 @@
 - [データベース設計](docs/DATABASE.md)
 - [開発コマンドガイド](docs/COMMAND_GUIDE.md)
 - [本番環境デプロイ手順](docs/DEPLOYMENT.md)
+- [フロントエンド設計方針](docs/FRONTEND_ARCHITECTURE.md)
 
 ## 外部リンク
 
