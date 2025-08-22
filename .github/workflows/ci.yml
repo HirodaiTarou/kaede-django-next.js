@@ -19,23 +19,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # # バックエンドテスト（Python/Django）
-      # - name: Setup Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: "3.11"
-      #     cache: "pip"
-      #     cache-dependency-path: backend/requirements.txt
+      # バックエンドテスト（Python/Django）
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
 
-      # - name: Install Python dependencies
-      #   run: |
-      #     cd backend
-      #     pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
 
-      # - name: Run backend tests
-      #   run: |
-      #     cd backend
-      #     python manage.py test --verbosity=2
+      - name: Run backend tests
+        env: # ← 環境変数を設定
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }} # ← GitHub Secretから読み込み
+          DEBUG: "True"
+          JWT_ACCESS_TOKEN_HOURS: "1"
+          JWT_REFRESH_TOKEN_DAYS: "1"
+          JWT_ROTATE_REFRESH_TOKENS: "True"
+          JWT_UPDATE_LAST_LOGIN: "True"
+        run: |
+          cd backend
+          python manage.py test --verbosity=2
 
       # フロントエンドテスト（Node.js）
       - name: Setup node
