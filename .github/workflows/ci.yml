@@ -20,29 +20,32 @@ jobs:
       - uses: actions/checkout@v4
 
       # バックエンドテスト（Python/Django）
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: backend/requirements.txt
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Install Python dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
-      - name: Run backend tests
-        env: # ← 環境変数を設定
-          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }} # ← GitHub Secretから読み込み
+      - name: Run backend tests with Docker Compose
+        env:
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DEBUG: "True"
+          DATABASE_URL: "postgresql://kaede:kaede@localhost:5432/kaede"
           JWT_ACCESS_TOKEN_HOURS: "1"
           JWT_REFRESH_TOKEN_DAYS: "1"
           JWT_ROTATE_REFRESH_TOKENS: "True"
           JWT_UPDATE_LAST_LOGIN: "True"
         run: |
-          cd backend
-          python manage.py test --verbosity=2
+          # PostgreSQLサービスを起動
+          docker-compose up -d db
+
+          # データベースの準備ができるまで待機
+          echo "Waiting for database to be ready..."
+          timeout 60 bash -c 'until docker-compose exec -T db pg_isready -U kaede -d kaede; do sleep 2; done'
+
+          # バックエンドサービスを起動（テスト用）
+          docker-compose run --rm backend python manage.py migrate
+          docker-compose run --rm backend python manage.py test --verbosity=2
+
+          # クリーンアップ
+          docker-compose down
 
       # フロントエンドテスト（Node.js）
       - name: Setup node
