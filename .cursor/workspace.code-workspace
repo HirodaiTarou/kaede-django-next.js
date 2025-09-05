@@ -1,0 +1,57 @@
+{
+  "folders": [
+    {
+      "name": "🌐 Kaede (Root)",
+      "path": "."
+    },
+    {
+      "name": "🐍 Backend (Django)",
+      "path": "./backend"
+    },
+    {
+      "name": "⚛️ Frontend (Next.js)",
+      "path": "./frontend"
+    },
+    {
+      "name": "📚 Documentation",
+      "path": "./docs"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.sortImports.args": ["--profile", "black"],
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.suggest.autoImports": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "files.associations": {
+      "*.py": "python",
+      "*.tsx": "typescriptreact",
+      "*.ts": "typescript"
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/__pycache__": true,
+      "**/.next": true,
+      "**/migrations": true,
+      "**/staticfiles": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.black-formatter",
+      "ms-python.isort",
+      "ms-python.flake8",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "ms-vscode.vscode-json"
+    ]
+  }
+}
