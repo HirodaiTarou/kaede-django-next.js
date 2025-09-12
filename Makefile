@@ -1,4 +1,4 @@
-.PHONY: help setup dev dev-backend dev-frontend dev-docker install install-backend install-frontend build test lint format clean docker-up docker-down docker-build docker-logs migrate makemigrations generate-schema schema
+.PHONY: help setup dev dev-backend dev-frontend dev-docker install install-backend install-frontend build test test-docker test-backend test-frontend test-contacts test-users test-lectures test-reviews lint format clean docker-up docker-down docker-build docker-logs migrate makemigrations generate-schema schema
 
 # =============================================================================
 # メイン実行コマンド
@@ -40,12 +40,21 @@ help:
 	@echo "  dev             - Start development servers (requires setup first)"
 	@echo "  dev-backend     - Start Django development server locally"
 	@echo "  dev-frontend    - Start Next.js development server locally"
-
+	@echo ""
 	@echo "  install         - Install dependencies for both backend and frontend"
 	@echo "  install-backend - Install Python dependencies"
 	@echo "  install-frontend- Install Node.js dependencies"
 	@echo "  build           - Build the frontend application"
-	@echo "  test            - Run tests for both backend and frontend"
+	@echo ""
+	@echo "  test            - Run tests for both backend and frontend (local)"
+	@echo "  test-docker     - Run tests for both backend and frontend (Docker)"
+	@echo "  test-backend    - Run backend tests (Docker)"
+	@echo "  test-frontend   - Run frontend tests (Docker)"
+	@echo "  test-contacts   - Run contacts app tests (Docker)"
+	@echo "  test-users      - Run users app tests (Docker)"
+	@echo "  test-lectures   - Run lectures app tests (Docker)"
+	@echo "  test-reviews    - Run reviews app tests (Docker)"
+	@echo ""
 	@echo "  lint            - Run linters for both backend and frontend"
 	@echo "  format          - Format code for both backend and frontend"
 	@echo "  clean           - Clean build artifacts and cache"
@@ -130,9 +139,48 @@ schema: generate-schema
 build:
 	cd frontend && npm run build
 
+# ローカル環境でのテスト（従来通り）
 test:
 	cd backend && python manage.py test
-	cd frontend && npm test
+	@echo "✅ Backend tests completed"
+	@echo "ℹ️  Frontend tests not configured yet"
+
+# Docker環境でのテスト
+test-docker: test-backend test-frontend
+	@echo "✅ All tests completed"
+
+# バックエンドテスト
+test-backend:
+	@echo "🧪 Running backend tests in Docker..."
+	docker compose exec backend python manage.py test
+	@echo "✅ Backend tests completed"
+
+# フロントエンドテスト
+test-frontend:
+	@echo "🧪 Running frontend tests in Docker..."
+	docker compose exec frontend npm test
+	@echo "✅ Frontend tests completed"
+
+# アプリケーション別テスト
+test-contacts:
+	@echo "🧪 Running contacts app tests in Docker..."
+	docker compose exec backend python manage.py test contacts
+	@echo "✅ Contacts tests completed"
+
+test-users:
+	@echo "🧪 Running users app tests in Docker..."
+	docker compose exec backend python manage.py test users
+	@echo "✅ Users tests completed"
+
+test-lectures:
+	@echo "🧪 Running lectures app tests in Docker..."
+	docker compose exec backend python manage.py test lectures
+	@echo "✅ Lectures tests completed"
+
+test-reviews:
+	@echo "🧪 Running reviews app tests in Docker..."
+	docker compose exec backend python manage.py test reviews
+	@echo "✅ Reviews tests completed"
 
 # =============================================================================
 # コード品質管理

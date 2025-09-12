@@ -39,6 +39,15 @@ coverage/
 .env.test.local
 .env.production.local
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
 # Backend (Django)
 backend/__pycache__/
 backend/*.py[cod]

@@ -1,15 +1,15 @@
 """
 Django settings for core project.
 """
-import os
 from datetime import timedelta
 from pathlib import Path
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+DEBUG = config('DEBUG', default='False', cast=bool)
 
 ALLOWED_HOSTS = ['*'] if DEBUG else ['.onrender.com']
 
@@ -85,12 +85,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
-if os.environ.get('DATABASE_URL'):
+if config('DATABASE_URL', default=None):
     # Production (Render.com with Supabase)
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ['DATABASE_URL'],
+            default=config('DATABASE_URL'),
             conn_max_age=600,
         )
     }
@@ -181,13 +181,17 @@ REST_FRAMEWORK = {
 # JWT Settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(
-        hours=int(os.environ.get('JWT_ACCESS_TOKEN_HOURS', 1))  # デフォルト追加
+        hours=config('JWT_ACCESS_TOKEN_HOURS', default=1, cast=int)
     ),
     'REFRESH_TOKEN_LIFETIME': timedelta(
-        days=int(os.environ.get('JWT_REFRESH_TOKEN_DAYS', 1))   # デフォルト追加
+        days=config('JWT_REFRESH_TOKEN_DAYS', default=1, cast=int)
     ),
-    'ROTATE_REFRESH_TOKENS': os.environ.get('JWT_ROTATE_REFRESH_TOKENS', 'True').lower() == 'true',
-    'UPDATE_LAST_LOGIN': os.environ.get('JWT_UPDATE_LAST_LOGIN', 'True').lower() == 'true',
+    'ROTATE_REFRESH_TOKENS': config(
+        'JWT_ROTATE_REFRESH_TOKENS', default=True, cast=bool
+    ),
+    'UPDATE_LAST_LOGIN': config(
+        'JWT_UPDATE_LAST_LOGIN', default=True, cast=bool
+    ),
 }
 
 # API Documentation
@@ -199,9 +203,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.environ.get(
+CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://127.0.0.1:3000'
+    default='http://localhost:3000,http://127.0.0.1:3000'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 
