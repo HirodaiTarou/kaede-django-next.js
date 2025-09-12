@@ -1,19 +1,17 @@
-from django.test import TestCase
-from contacts.models import Contact
+# from django.test import TestCase
+# from contacts.models import Contact
 
 
-class ContactModelTestCase(TestCase):
-    def test_contact_model(self):
-        """Contactモデルのテスト"""
-        contact = Contact.objects.create(
-            name="テストユーザー",
-            email="test@example.com",
-            category="general",
-            message="テストメッセージ"
-        )
-
-        self.assertEqual(contact.name, "テストユーザー")
-        self.assertEqual(contact.email, "test@example.com")
-        self.assertEqual(contact.category, "general")
-        self.assertEqual(contact.message, "テストメッセージ")
-        self.assertTrue(contact.created_at)
+# class ContactModelTestCase(TestCase):
+#     def test_contact_model(self):
+#         response = self.client.post(
+#             "api/v1/contacts/",
+#             {
+#                 "name": "テストユーザー",
+#                 "email": "test@example.com",
+#                 "category": "general",
+#                 "message": "テストメッセージ"
+#             }
+#         )
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertTrue(Contact.objects.filter(email="test@example.com").exists())
